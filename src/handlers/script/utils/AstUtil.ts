@@ -1,4 +1,4 @@
-import * as UglifyJS from 'uglify-es';
+import * as UglifyJS from 'uglify-js';
 
 let nope = function () {
 	return true;
@@ -13,7 +13,7 @@ let nope = function () {
 	},
 
 	findNode = function (node, fn, options: {scopeOnly: boolean} = {scopeOnly: false}) {
-		var result, intop = true;	
+		var result, intop = true;
 		walk(node, function (node) {
 			if (options.scopeOnly && !intop) {
 				if (node instanceof UglifyJS.AST_Scope) {

@@ -37,7 +37,7 @@ function build () {
             "appcfg",
             "cheerio",
             "includejs",
-            "uglify-es",
+            "uglify-js",
             "atma-utils",
             "^memd$",
             "^axios$",
