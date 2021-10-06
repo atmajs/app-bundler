@@ -10,7 +10,9 @@ var ___VAR_ID___;
     function __isObj(x) {
         return x != null && typeof x === 'object' && x.constructor === Object;
     }
-    if (__isObj(___VAR_ID___) && __isObj(module.exports)) {
+    if (___VAR_ID___ === module.exports) {
+        // do nothing if
+    } else if (__isObj(___VAR_ID___) && __isObj(module.exports)) {
         Object.assign(___VAR_ID___, module.exports);
     } else {
         ___VAR_ID___ = module.exports;
