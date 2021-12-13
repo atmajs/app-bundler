@@ -34,7 +34,7 @@
     "homepage": "https://github.com/atmajs/app-bundler",
     "dependencies": {
         "alot": "^0.2.81",
-        "appcfg": "^0.2.42",
+        "appcfg": "^0.4.54",
         "atma-class": "^1.1.83",
         "atma-io": "^1.2.16",
         "atma-loader-ts": "^1.1.12",
