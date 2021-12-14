@@ -23,8 +23,8 @@ export namespace Runner {
 
         return processMany(bundles, bundleFn)
     }
-    
-    function processMany(bundles: IBundle[], bundleFn: IBundlerFunction): PromiseLike<IBundleResult[]> {
+
+    function processMany(bundles: IBundle[], bundleFn: IBundlerFunction): Promise<IBundleResult[]> {
         let i = -1,
             imax = bundles.length,
             hasWatcher = bundles.some(x => x.watch),
@@ -55,7 +55,7 @@ export namespace Runner {
                             name: bundle.name || bundle.file,
                             error: error
                         };
-                        
+
                         console.error(`Failed ${result.name}`);
                         console.error(error);
                         results.push(result);
@@ -65,7 +65,7 @@ export namespace Runner {
             }
         });
     }
-    
+
     function processSingle(config: IBundle, bundleFn: IBundlerFunction) {
         validate(config);
         let path = config.file,
@@ -78,7 +78,7 @@ export namespace Runner {
             Bundler.Config.define('middlewares', opts.middlewares);
         }
         Bundler.clearCache();
-        
+
         if (opts.configuration) {
             var Configurator = require(config.configuration);
             return Configurator.process(Bundler).then(() => {

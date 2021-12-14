@@ -5,7 +5,9 @@ if (args) {
 	runNewNode(args);
 } else {
 	let run = require('./lib/cli');
-    run();
+    run().catch(error => {
+		console.error('AppBundler Failed', error);
+	});
 }
 
 
@@ -52,7 +54,7 @@ function resolveNativeNodeArgumentsIfAny () {
 		case '--debug-brk':
 		case '--inspect':
 		case '--inspect-brk':
-			args.unshift(arg);	  
+			args.unshift(arg);
 			break;
 		case '-gc':
 		case '--expose-gc':

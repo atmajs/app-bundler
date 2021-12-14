@@ -1,37 +1,34 @@
-import * as config from 'appcfg'
+import AppCfg from 'appcfg'
 import { Runner } from './Runner';
 
 
-export = function run () {
-    Config
-        .load()
-        .then(config => Runner.run(config));
+export = async function run () {
+    let config = await Config.load();
+    return Runner.run(config);
 }
 
 
 namespace Config {
-    function doLoad(sources) {
-        return config
-            .fetch(sources)
-            .fail(error => {
-                console.error('Configuration error', error.message);
-                process.exit(1);
-            })
-            .then(x => x.toJSON());
+    async function doLoad(sources) {
+        try {
+            let config = await AppCfg.fetch(sources);
+            return config.toJSON();
+        } catch (error) {
+            console.error('Configuration error', error.message);
+            process.exit(1);
+        }
     }
 
-    export function load() {
-        return doLoad([{
+    export async function load() {
+        let json = await doLoad([{
             path: 'package.json',
             getterProperty: 'app-bundler',
             optional: true
-        }])
-            .then(json => {
-                if (json.config) {
-                    return doLoad([{ path: json.config }]);
-                }
-                return json;
-            });
+        }]);
+        if (json.config) {
+            return await doLoad([{ path: json.config }]);
+        }
+        return json;
     }
-   
+
 }
