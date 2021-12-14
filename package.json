@@ -1,6 +1,6 @@
 {
     "name": "app-bundler",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "",
     "main": "lib/bundler.js",
     "bin": {
@@ -74,6 +74,10 @@
                     "compilerOptions": {
                         "noEmitHelpers": true,
                         "importHelpers": true,
+
+                        "lib": ["ES2019"],
+                        "target": "ES2019",
+
                         "#if (TEST)": {
                             "module": "AMD"
                         },
