@@ -5,12 +5,12 @@ import { MaskScriptable } from './MaskScriptable';
 export class MaskBuilder extends BaseBuilder {
 
     createModule(outputItem: OutputItem, otherOutputItems: OutputItem[]) {
-        var out = [], arr;
+        let out = [], arr;
 
 
         otherOutputItems.forEach(item => {
             if (item.resource.type === 'css') {
-                var arr = this.registerStyles(item.resources);
+                let arr = this.registerStyles(item.resources);
                 out.push(...arr);
             }
         })
@@ -41,12 +41,12 @@ export class MaskBuilder extends BaseBuilder {
             return;
         }
 
-        var maskDeps = dependencies.filter(x => x.type === 'mask');
+        let maskDeps = dependencies.filter(x => x.type === 'mask');
 
         maskDeps.forEach(x => x.embed = true);
 
-        var body = maskDeps.map(x => x.content).join('\n');
-        var imports = dependencies
+        let body = maskDeps.map(x => x.content).join('\n');
+        let imports = dependencies
             .filter(x => x.type !== 'mask')
             .filter(x => Boolean(x.content))
             .sort((x,y) => {
@@ -60,7 +60,7 @@ export class MaskBuilder extends BaseBuilder {
                 return 0;
             })
             .map(x => {
-                var url = x.toRelative(resource);
+                let url = x.toRelative(resource);
                 return `import sync from '${url}';`;
             })
             .join('\n');
