@@ -1,7 +1,7 @@
 module.exports = {
-	suites: {
-		'node': {
-			tests: 'test/**.test'
-		}
-	}
+    suites: {
+        'node': {
+            tests: 'test/**.spec.ts'
+        }
+    }
 }
