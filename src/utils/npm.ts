@@ -3,19 +3,23 @@ import { io } from '../global'
 
 export namespace Npm {
     export function resolveAppUrl (path: string, currentLocation: string, base: string) {
-        
+
         let name = /^(@?[^\\\/]+)/.exec(path)[0];
         let resource = path.substring(name.length + 1);
-        if (resource && hasExt(resource) === false) {
-            resource += '.js';
-        }
         while (path != null) {
             let dirname = path_combine(currentLocation, 'node_modules', name);
             let pckg = path_combine(dirname, 'package.json');
             if (io.File.exists(pckg)) {
-                let json = io.File.read(pckg);
-                if (json) {
-                    let filename = combineMain(dirname, json.main);
+
+                let main = resource;
+                if (main === '') {
+                    let json = io.File.read(pckg);
+                    if (json) {
+                        main = json.main;
+                    }
+                }
+                if (main) {
+                    let filename = combineMain(dirname, main);
                     if (base) {
                         if (base.endsWith('/') === false) {
                             // Base path must be a folder
@@ -40,19 +44,26 @@ export namespace Npm {
     }
 
 
-    function combineMain (cwd, filename) {
+    function combineMain (directory, filename) {
         if (filename == null) {
             filename = 'index.js';
         }
-        if (hasExt(filename) === false) {
-            filename += '.js';
+
+
+        let path = path_combine(directory, filename);
+        if (hasExt(path) === false) {
+            let likelyTs = path.includes('/src/');
+            if (likelyTs) {
+                if (io.File.exists(path + '.ts')) {
+                    return path + '.ts';
+                }
+            }
+            path += '.js';
         }
-        var path = path_combine(cwd, filename);
 
         if (io.File.exists(path)) {
             return path;
         }
-        
         console.log(`Entry File does not exist: ${filename}`);
     }
     function hasExt(path) {
