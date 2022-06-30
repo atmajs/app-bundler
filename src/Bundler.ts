@@ -139,8 +139,7 @@ export class Bundler extends class_EventEmitter {
                             .on('changed', rebuild);
                     }
                     return build(resource)
-                        .then((result) => solution.onBuildReady(result))
-                        .then((result) => solution.runScripts('postbuild', result))
+                        .then((result) => solution.onBuildReady(result));
                 });
         }
         return solution
@@ -164,7 +163,11 @@ export class Bundler extends class_EventEmitter {
                 .assetsManager
                 .flush()
                 .then(() => {
-                    return Promise.resolve(solution)
+                    return solution
+                        .runScripts('postbuild')
+                        .then(() => {
+                            return Promise.resolve(solution)
+                        });
                 });
         }
         if (opts && opts.watch === true) {
