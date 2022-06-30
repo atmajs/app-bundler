@@ -8,6 +8,7 @@ import { OutputResources } from './OutputResources';
 import { Handlers } from '../handlers/exports'
 import { BaseHandler } from '../handlers/base/BaseHandler';
 import { io } from '../global'
+import { run } from 'shellbee';
 
 export class Solution extends class_EventEmitter {
     path: string
@@ -52,10 +53,14 @@ export class Solution extends class_EventEmitter {
                 resolve(...args);
                 return;
             }
-            async_waterfall(arr, function (path) {
-                let mix = require(class_Uri.combine(process.cwd(), path));
-                if (mix && mix.process) {
-                    return mix.process();
+            async_waterfall(arr, async function (pathOrCommand) {
+                if (/^[.\/]/.test(pathOrCommand)) {
+                    let mix = require(class_Uri.combine(process.cwd(), pathOrCommand));
+                    if (mix && mix.process) {
+                        return mix.process();
+                    }
+                } else {
+                    let result = await run(pathOrCommand);
                 }
             }).then(() => resolve(...args), reject);
         })

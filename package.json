@@ -1,6 +1,6 @@
 {
     "name": "app-bundler",
-    "version": "0.1.12",
+    "version": "0.1.13",
     "description": "",
     "main": "lib/bundler.js",
     "bin": {
@@ -45,6 +45,7 @@
         "includejs": "^0.16.9",
         "maskjs": "^0.72.37",
         "memd": "^0.3.10",
+        "shellbee": "^0.5.22",
         "uglify-js": "^3.13.10"
     },
     "atma": {
