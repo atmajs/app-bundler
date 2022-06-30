@@ -1,19 +1,22 @@
 import { io } from "../../../../global";
 
 export const Templates = {
-	Module: `
+    Module: `
 // import ./Module.js
 `,
-	ModuleSimplified: `
+    ModuleSimplified: `
 // import ./ModuleSimplified.js
 `,
-	Header: `
+    Header: `
 // import ./Header.js
 `,
-	RootModule: `
+    RootModule: `
 // import ./RootModule.js
 `,
-	UMD: `
+    RootModuleWrapped: `
+// import ./RootModuleWrapped.js
+`,
+    UMD: `
 // import ./UMD.js
 `,
     Style: `
@@ -22,11 +25,11 @@ export const Templates = {
     Mask: `
 // import ./Mask.js
 `,
-	load (path: string) {
-		let template = io.File.read(path);
-		if (!template) {
-			throw new Error(`Custom module wrapper not found: ${path}`)
-		}
-		return template;
-	}
+    load (path: string) {
+        let template = io.File.read(path);
+        if (!template) {
+            throw new Error(`Custom module wrapper not found: ${path}`)
+        }
+        return template;
+    }
 };

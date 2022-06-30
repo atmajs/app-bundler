@@ -6,49 +6,49 @@ import { BaseHandler } from "../../base/BaseHandler";
 import { IncludeJsRewriter } from "./IncludeJsRewriter";
 
 export class IncludeJsHandler extends BaseHandler {
-	static Parser = IncludeJsParser
-	static Rewriter = IncludeJsRewriter
-	static Builder = IncludeJsBuilder
-	static PathResolver = null
+    static Parser = IncludeJsParser
+    static Rewriter = IncludeJsRewriter
+    static Builder = IncludeJsBuilder
+    static PathResolver = null
 
-	constructor (solution) {
-		super(solution);
+    constructor (solution) {
+        super(solution);
 
-		// if (this.solution.opts.package.module === 'includejs') {
-		// 	this.registerMappings_();
-		// }
-	}
+        // if (this.solution.opts.package.module === 'includejs') {
+        //     this.registerMappings_();
+        // }
+    }
 
-	accepts (resource) {
-		if (resource.type !== 'js') {
-			return false;
-		}
-		var module = resource.getModule();	
-		if (module == null || module === 'root') 
-			module = this.solution.opts.package.module;
+    accepts (resource) {
+        if (resource.type !== 'js') {
+            return false;
+        }
+        var module = resource.getModule();
+        if (module == null || module === 'root')
+            module = this.solution.opts.package.module;
 
-		return module === 'includejs';
-	}
-
-	
-
-	rewriteRoot (root, dependencies) {
-		dependencies.forEach(x => x.embed = true);
+        return module === 'includejs';
+    }
 
 
-		var body = dependencies
-			.map(x => x.content)
-			.concat([ root.content ])
-			.join('\n');
 
-		body = Templates.RootModule.replace('%BUNDLE%', () => body);
+    rewriteRoot (root, dependencies) {
+        dependencies.forEach(x => x.embed = true);
 
-		root.content = body;
-	}
 
-	resolvePath (includeData, parent) {
-		return Include
-			.PathResolver
-			.resolveBasic(includeData.url, includeData.type, parent);
-	}
+        var body = dependencies
+            .map(x => x.content)
+            .concat([ root.content ])
+            .join('\n');
+
+        body = Templates.RootModule.replace('%BUNDLE%', () => body);
+
+        root.content = body;
+    }
+
+    resolvePath (includeData, parent) {
+        return Include
+            .PathResolver
+            .resolveBasic(includeData.url, includeData.type, parent);
+    }
 };

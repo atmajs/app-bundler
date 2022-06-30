@@ -8,6 +8,9 @@ export class ModuleWrapper {
     wrap (body: string) {
         var wrapper = this.solution.opts.package.moduleWrapper;
         switch (wrapper) {
+            case 'script':
+                body = this.wrapSimple(body);
+                break;
             case 'iif':
                 body = this.wrapWithIIF(body);
                 break;
@@ -17,17 +20,21 @@ export class ModuleWrapper {
             case 'custom':
                 body = this.wrapWithCustom(body);
                 break;
-            case 'script':
-                break;
             default:
                 throw new Error('Uknown module wrapper: ' + wrapper);
         }
         return body;
     }
 
-    private wrapWithIIF(body) {
+    private wrapSimple(body) {
         return Templates
             .RootModule
+            .replace('%BUNDLE%', () => body);
+    }
+
+    private wrapWithIIF(body) {
+        return Templates
+            .RootModuleWrapped
             .replace('%BUNDLE%', () => body);
     }
 
