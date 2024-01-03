@@ -185,8 +185,8 @@ export class SolutionOpts extends SolutionOptsBase {
         middlewares: null,
         varDefs: null,
         parserIgnoreDependencies: [
-            '\\/bower_components\\/',
-            '\\/node_modules\\/(?!.+\\.ts\\b)',
+            // '\\/bower_components\\/',
+            // '\\/node_modules\\/(?!.+\\.ts\\b)',
             '\\.min\\.'
         ],
         dynamicDependencies: [
