@@ -146,7 +146,7 @@ namespace ResourceLoader {
         constructor(public resource: Resource, public opts, public solution: Solution) {
 
         }
-        process() {
+        async process() {
             this
                 .solution
                 .reporter
@@ -166,19 +166,30 @@ namespace ResourceLoader {
                 return;
             }
 
-            let start = Date.now();
-            let reader = Configuration.Instance.get('readFile');
-            reader(this.resource.filename, this.opts).then(
-                content => {
-                    let end = Date.now();
-                    this.solution.reporter.print(color(` cyan<${end - start}> ms \n`));
-                    this.resource.content = content;
-                    this.processChildren();
-                },
-                error => {
-                    this.promise.reject(error);
+            try {
+                let start = Date.now();
+                let reader = Configuration.Instance.get('readFile');
+
+                let content = await reader(this.resource.filename, this.opts);
+                let handler = this.solution.handlers.find(x => x.parser.accepts(this.resource.type))
+                if (handler?.parser?.transpile !== null) {
+                    let result = await handler.parser.transpile(content, this.resource);
+                    content = result?.content ?? content;
                 }
-            );
+
+                let end = Date.now();
+                this.solution.reporter.print(color(` cyan<${end - start}> ms \n`));
+                this.resource.content = content;
+
+                if (this.resource.type === 'data' || this.resource.type === 'load') {
+                    this.promise.resolve(this);
+                    return;
+                }
+                this.processChildren();
+
+            } catch (error) {
+                this.promise.reject(error);
+            }
         }
         private processChildren() {
             if (this.shouldSkipChildren()) {

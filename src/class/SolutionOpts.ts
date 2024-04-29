@@ -101,7 +101,7 @@ export class SolutionOptsBase {
     package: IPackageOptions
     extensions: IExtensionTypes
     defaultExtensions: IDefaultExtension
-    mappings: any
+    mappings: Record<string, string>
     rewrites: { [appUrl: string]: string }
     middlewares: any
     varDefs: VarDefinitions
@@ -167,7 +167,10 @@ export class SolutionOpts extends SolutionOptsBase {
             'sass': { type: 'css' },
 
             'html': { type: 'html' },
-            'json': { type: 'data' },
+
+            // will be embedded as data into the build
+            'json': { type: 'js' },
+            'yml': { type: 'js' },
 
             'jpg': { type: 'asset' },
             'png': { type: 'asset' },

@@ -9,54 +9,52 @@ import { ResourceInfo } from '../class/ResourceInfo';
 import { Resource } from '../class/Resource';
 
 export const Parser = {
-	getDependencies(resource, solution): PromiseLike<ResourceInfo> {
-		assert(resource != null, 'Resource is empty');
-		assert(solution instanceof Solution, 'Solution is not passed');
+    getDependencies(resource, solution): PromiseLike<ResourceInfo> {
+        assert(resource != null, 'Resource is empty');
+        assert(solution instanceof Solution, 'Solution is not passed');
 
-		var dfr = new class_Dfr;
+        let dfr = new class_Dfr;
 
-		getDependenciesInternal(resource, solution)
-			.done(_runMiddlewares)
-			.fail(error => dfr.reject(error))
-			;
+        getDependenciesInternal(resource, solution)
+            .then(_runMiddlewares, error => dfr.reject(error))
+            ;
 
-		function _runMiddlewares(deps) {
+        function _runMiddlewares(deps) {
             getDependenciesExternal(deps, resource, solution)
                 .then((deps) => mapDeps(deps, solution))
-				.then((deps) => filterDynamicDeps(deps, solution))
-				.done(deps => dfr.resolve(deps))
-				.fail(error => dfr.reject(error))
-				;
-		}
-		return dfr as any;
-	}
+                .then((deps) => filterDynamicDeps(deps, solution))
+                .then(deps => dfr.resolve(deps), error => dfr.reject(error))
+                ;
+        }
+        return dfr as any;
+    }
 };
 
 function getDependenciesInternal(resource: Resource, solution: Solution) {
-	assert(typeof resource.url === 'string', 'Path is expected');
+    assert(typeof resource.url === 'string', 'Path is expected');
 
-	var ext = path_getExtension(resource.url);
-	var handler = solution.handlers.find(x => x.parser.accepts(resource.type) || x.parser.accepts(ext))
-	if (handler == null) {
-		console.warn('GetDependenciesInternal: Skip uknown resource type', resource.type);
-		return async_resolve({ dependencies: [] });
-	}
+    let ext = path_getExtension(resource.url);
+    let handler = solution.handlers.find(x => x.parser.accepts(resource.type) || x.parser.accepts(ext))
+    if (handler == null) {
+        console.warn('GetDependenciesInternal: Skip unknown resource type', resource.type);
+        return async_resolve({ dependencies: [] });
+    }
 
-	return handler.parser.getDependencies(resource.content, resource);
+    return handler.parser.getDependencies(resource.content, resource);
 }
 function getDependenciesExternal(deps, resource, solution) {
-	return _middlewares
-		.run('parseDependencies', resource, deps, solution)
-		.then(() => deps)
-		;
+    return _middlewares
+        .run('parseDependencies', resource, deps, solution)
+        .then(() => deps)
+        ;
 }
 function filterDynamicDeps(info, solution) {
-	info.dependencies = info.dependencies.filter(dep => isDynamicDependency(dep, solution) === false);
-	return info;
+    info.dependencies = info.dependencies.filter(dep => isDynamicDependency(dep, solution) === false);
+    return info;
 }
 function isDynamicDependency(dep, solution) {
-	var arr = solution.opts.dynamicDependencies;
-	return arr.length !== 0 && arr.some(rgx => rgx.test(dep.url));
+    let arr = solution.opts.dynamicDependencies;
+    return arr.length !== 0 && arr.some(rgx => rgx.test(dep.url));
 }
 function mapDeps(info: ResourceInfo, solution: Solution) {
     info.dependencies.forEach(dep => {

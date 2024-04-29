@@ -101,8 +101,18 @@ export class Resource {
         if (includeData.url == null) {
             return;
         }
-        if (solution && solution.opts.mappings[includeData.url]) {
-            includeData.url = solution.opts.mappings[includeData.url];
+        let mappings = solution?.opts.mappings ?? {};
+        if (mappings[includeData.url] != null) {
+            includeData.url = mappings[includeData.url];
+        } else {
+            // Map resource by regex, for example the filename to another filename
+            for (let key in mappings) {
+                let rgx = new RegExp(key);
+                if (rgx.test(includeData.url)) {
+                    includeData.url = includeData.url.replace(rgx, mappings[key]);
+                    break;
+                }
+            }
         }
 
         let url: string;

@@ -3,8 +3,17 @@ import { Include } from '../../../class/Include';
 import { BaseParser } from "../../base/BaseParser";
 import { class_Dfr } from 'atma-utils';
 import { ResourceInfo } from '../../../class/ResourceInfo';
+import { Resource } from '../../../class/Resource';
 
 export class CommonJsParser extends BaseParser {
+
+    async transpile(content: any, resource: Resource): Promise<{ content: string; }> {
+        if (/\.(yml|json)([^\w]|$)/.test(resource.filename)) {
+            let str = typeof content !== 'string' ? JSON.stringify(content, null, '  ') : content;
+            str = `module.exports = ${str};`;
+            return { content: str };
+        }
+    }
 
     getDependencies(ast, ownerResource) {
         let info = {
@@ -23,7 +32,7 @@ export class CommonJsParser extends BaseParser {
         return new class_Dfr().resolve(info) as PromiseLike<ResourceInfo>;
     }
 
-    _process(node, scope) {
+    private _process(node, scope) {
         if (node.args.length !== 1) {
             return null;
         }
@@ -51,7 +60,7 @@ export class CommonJsParser extends BaseParser {
         return include.includes;
     }
 
-    _isNodeJsNative(path) {
+    private _isNodeJsNative(path) {
         return false;
     }
 };

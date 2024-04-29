@@ -5,38 +5,38 @@ import { BaseRewriter } from "./BaseRewriter";
 import { BasePathResolver } from "./BasePathResolver";
 
 export abstract class BaseHandler {
-	
-	parser: BaseParser
-	rewriter: BaseRewriter
-	builder: BaseBuilder
-	pathResolver: BasePathResolver
+
+    parser: BaseParser
+    rewriter: BaseRewriter
+    builder: BaseBuilder
+    pathResolver: BasePathResolver
 
 
-	constructor (public solution: Solution) {
-		
-		var { Parser, Rewriter, Builder, PathResolver } = <typeof PathResolver>this.constructor;
-		
-		this.parser = new Parser(solution, this);
-		this.rewriter = new Rewriter(solution, this);
-		this.builder = new Builder(solution, this);
-		this.pathResolver = new PathResolver(solution, this);
-	}
+    constructor (public solution: Solution) {
 
-	static Parser: IBaseParserCtor
-	static Rewriter: IBaseRewriterCtor
-	static Builder: IBaseBuilderCtor
-	static PathResolver: IBasePathResolverCtor
+        let { Parser, Rewriter, Builder, PathResolver } = <typeof BaseHandler> this.constructor;
+
+        this.parser = new Parser(solution, this);
+        this.rewriter = new Rewriter(solution, this);
+        this.builder = new Builder(solution, this);
+        this.pathResolver = new PathResolver(solution, this);
+    }
+
+    static Parser: IBaseParserCtor
+    static Rewriter: IBaseRewriterCtor
+    static Builder: IBaseBuilderCtor
+    static PathResolver: IBasePathResolverCtor
 };
 
 interface IBaseParserCtor {
-	new (solution: Solution, handler: BaseHandler): BaseParser
+    new (solution: Solution, handler: BaseHandler): BaseParser
 }
 interface IBaseRewriterCtor {
-	new (solution: Solution, handler: BaseHandler): BaseRewriter
+    new (solution: Solution, handler: BaseHandler): BaseRewriter
 }
 interface IBaseBuilderCtor {
-	new (solution: Solution, handler: BaseHandler): BaseBuilder
+    new (solution: Solution, handler: BaseHandler): BaseBuilder
 }
 interface IBasePathResolverCtor {
-	new (solution: Solution, handler: BaseHandler): BasePathResolver
+    new (solution: Solution, handler: BaseHandler): BasePathResolver
 }

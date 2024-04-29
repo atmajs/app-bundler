@@ -27,12 +27,12 @@ export class Include {
         }
     }
     include(type, mix) {
-        var pckg = mix;
-        if (typeof pckg === 'string' && arguments.length > 2) {
-            pckg = Array.prototype.slice.call(arguments, 1);
+        var pkg = mix;
+        if (typeof pkg === 'string' && arguments.length > 2) {
+            pkg = Array.prototype.slice.call(arguments, 1);
         }
 
-        Routes.each(type, pckg, (namespace, route) => {
+        Routes.each(type, pkg, (namespace, route) => {
             let item = new Include();
             item.type = type;
             item.url = class_Uri.combine(this.base, route.path);
@@ -111,11 +111,12 @@ export class Include {
     load: (x: any) => this
     lazy: (x: any) => this
     mask: (x: any) => this
+    data: (x: any) => this
 };
 
 
 
-['js', 'css', 'load', 'lazy', 'mask'].forEach(type => {
+['js', 'css', 'load', 'lazy', 'mask', 'data'].forEach(type => {
     Include.prototype[type] = function () {
         var mix = arguments.length > 1 ? Array.from(arguments) : arguments[0];
         return this.include(type, mix);
