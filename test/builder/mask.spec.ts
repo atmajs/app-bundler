@@ -2,7 +2,7 @@ import { TestHelper } from '../TestHelper'
 import { Bundler } from '../../src/Bundler'
 import { File } from 'atma-io'
 
-var Files =  {
+const Files =  {
     'main.mask': `
         import Letter from './compos/Letter';
         Letter;
@@ -67,7 +67,7 @@ var Files =  {
     `
 };
 
-var mask;
+let mask;
 UTest({
     $before () {
         TestHelper.registerFiles(Files);
@@ -91,15 +91,15 @@ UTest({
     'should bundle mask' () {
         return Bundler.build('main.mask', {silent: true}).done(resources => {
             eq_(resources.length, 1);
-            var main = resources[0];
+            let main = resources[0];
 
             eq_(main.type, 'mask');
             eq_(main.url, '/build/release/main.mask');
 
-            var avoid = assert.avoid('Should not load the dependency');
+            let avoid = assert.avoid('Should not load the dependency');
             mask.cfg('getFile', avoid);
 
-            var  html = mask.render(main.content, null, { filename: main.url })
+            let  html = mask.render(main.content, null, { filename: main.url })
             has_(html, 'I am an A</h4>')
         });
     },
@@ -108,13 +108,13 @@ UTest({
         return Bundler
             .getResources('index.html', {silent: true})
             .then(arr => arr.map(x => x.toJSON(false)))
-            .done(arr => {
+            .then(arr => {
                 eq_(arr.length, 4);
 
-                var paths = arr.map(x => x.url);
+                let paths = arr.map(x => x.url);
                 deepEq_(paths, ['/compos/Letter.mask', '/main.mask', '/global.mask', '/index.html']);
 
-                var asModules = arr.map(x => x.asModules);
+                let asModules = arr.map(x => x.asModules);
                 deepEq_(asModules, [['mask'], ['mask'], ['mask'], ['root']]);
             });
     },
@@ -123,7 +123,7 @@ UTest({
 
             eq_(resources.length, 1);
             eq_(resources[0].type, 'html');
-            var main = resources[0];
+            let main = resources[0];
             eq_(main.url, '/build/release/index.html');
 
             ['compos/Letter.mask', 'main.mask', 'global.mask']
@@ -133,7 +133,7 @@ UTest({
     },
     'should test mask sync module loading' (done) {
 
-        var Files = {
+        let Files = {
             'MyComponents.mask': `
                 module path='A.mask' {
                     h1 > 'A'
@@ -150,11 +150,11 @@ UTest({
                 Template;
             `
         };
-        var _queue = [];
+        let _queue = [];
         mask.cfg('getFile', (path) => {
-            var dfr = new mask.class.Deferred();
-            var name = path.substring(path.lastIndexOf('/') + 1);
-            var str = Files[name];
+            let dfr = new mask.class.Deferred();
+            let name = path.substring(path.lastIndexOf('/') + 1);
+            let str = Files[name];
             is_(str, 'String');
             _queue.push(name);
             if (name === 'MyComponents.mask') {
@@ -175,30 +175,35 @@ UTest({
             })
     },
     'should test pages in html page' (done) {
-        Bundler.build('pages.html', {silent: true}).done(resources => {
+        Bundler.build('pages.html', { silent: true }).done(resources => {
 
             eq_(resources.length, 3);
-            var urls = resources.map(x => x.url);
+            let urls = resources.map(x => x.url);
             deepEq_(urls, [
                 '/build/release/about_index.mask',
                 '/build/release/info_index.mask',
                 '/build/release/pages.html'
             ]);
 
-            var main = resources[2];
+            let main = resources[2];
 
             urls
                 .slice(0, urls.length - 1)
                 .forEach(path => has_(main.content, `import sync from '${path}';`));
 
 
+            mask.cfg('getScript', path => {
+                let resource = resources.find(x => path.indexOf(x.url) > -1);
+                is_(resource, 'Object', `Resource not found ${path}`);
+                return (new mask.class.Deferred()).resolve(resource.content);
+            });
             mask.cfg('getFile', path => {
-                var resource = resources.find(x => path.indexOf(x.url) > -1);
+                let resource = resources.find(x => path.indexOf(x.url) > -1);
                 is_(resource, 'Object', `Resource not found ${path}`);
                 return (new mask.class.Deferred()).resolve(resource.content);
             });
 
-            var template = mask.j(main.content).find('script').text();
+            let template = mask.j(main.content).find('script').text();
             mask
                 .renderAsync(template, {}, { filename: main.url })
                 .done(html => {
@@ -211,7 +216,7 @@ UTest({
         Bundler.build('scripts.mask', {silent: true}).done(resources => {
 
             eq_(resources.length, 2);
-            var urls = resources.map(x => x.url);
+            let urls = resources.map(x => x.url);
             deepEq_(urls, [
                 '/build/release/main_index.js',
                 '/build/release/scripts.mask'
@@ -219,21 +224,21 @@ UTest({
 
 
 
-            var main = resources[1];
+            let main = resources[1];
             has_(main.content, `import sync from 'main_index.js';`);
             mask.cfg('getScript', assert.await(path => {
-				if (path.includes('Provider.js')) {
-					return Promise.resolve(require('../../Provider.js'));
-				}
+                if (path.includes('Provider.js')) {
+                    return Promise.resolve(require('../../Provider.js'));
+                }
 
-                var resource = resources.find(x => path.indexOf(x.url) > -1);
+                let resource = resources.find(x => path.indexOf(x.url) > -1);
                 notEq_(resource, null, 'Failed for path ' + path);
 
                 eval(resource.content);
                 return Promise.resolve();
             }));
 
-            var template = main.content;
+            let template = main.content;
             mask
                 .renderAsync(template, {}, { filename: main.url }, null, new mask.Compo())
                 .fail(console.error)
@@ -274,11 +279,11 @@ UTest({
         },
 
         'should test deps' () {
-            var bundler = new Bundler('button.mask', {silent: true});
+            let bundler = new Bundler('button.mask', {silent: true});
             return bundler
                 .getResources()
                 .then(result => {
-                    var urls = result.map(x => x.url);
+                    let urls = result.map(x => x.url);
                     deepEq_(urls, [
                         '/button.css',
                         '/compos/clickable.css',
@@ -294,20 +299,20 @@ UTest({
 
 
                 eq_(resources.length, 2);
-                var urls = resources.map(x => x.url);
+                let urls = resources.map(x => x.url);
                 deepEq_(urls, [
                     '/build/release/main_index.css',
                     '/build/release/button.mask'
                 ]);
 
-                var styles = [
+                let styles = [
                     File.read('button.css'),
                     File.read('compos/clickable.css')
                 ].join('\n');
 
                 eq_(resources[0].content, styles);
 
-                var main = resources[1];
+                let main = resources[1];
                 mask.cfg('getFile', assert.avoid());
                 mask
                     .renderAsync(main.content, {}, { filename: main.url}, null, new mask.Compo())

@@ -15,13 +15,13 @@ UTest({
         $before() {
             TestHelper.registerFiles({
                 'foo.js': `
-					module.exports = {
+                    module.exports = {
                         letters: require('./data/icons')
                     };
-				`,
+                `,
                 'data/icons.js': `
-					module.exports = ['a', 'b'];
-				`,
+                    module.exports = ['a', 'b'];
+                `,
             });
         },
         'should rewrite path to load file from local app base path'() {
@@ -52,14 +52,14 @@ UTest({
         $before() {
             TestHelper.registerFiles({
                 'main.js': `
-					module.exports = require('baz');
-				`,
-                'node_modules/baz/package.json':  { 
-                    "main": "lib/some.js" 
+                    module.exports = require('baz');
+                `,
+                'node_modules/baz/package.json':  {
+                    "main": "lib/some.js"
                 },
                 'node_modules/baz/lib/some.js': `
-					module.exports = 'a foo some';
-				`,
+                    module.exports = 'a foo some';
+                `,
             });
         },
         'should load file with nodejs path resolution'() {

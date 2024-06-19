@@ -2,7 +2,7 @@ import { TestHelper } from '../TestHelper';
 import { Bundler } from '../../src/Bundler'
 import { File } from 'atma-io'
 
-var Files = {
+const Files = {
     'main.js': `
         include
             .js('./data/icons.js')
@@ -23,7 +23,7 @@ var Files = {
     `,
     'index.html': `
         <!doctype html>
-        
+
         <script src='node_modules/include/include.js' data-bundler='ignore'></script>
         <script src='main.js'></script>
     `
@@ -67,7 +67,7 @@ UTest({
             return Bundler
                 .getResources('index.html', { silent: true })
                 .then(arr => arr.map(x => x.toJSON(false)))
-                .done(arr => {
+                .then(arr => {
                     eq_(arr.length, 3);
 
                     var paths = arr.map(x => x.url);
@@ -183,7 +183,7 @@ UTest({
             return Bundler
                 .getResources('index.html', { silent: true })
                 .then(arr => arr.map(x => x.toJSON(false)))
-                .done(arr => {
+                .then(arr => {
                     eq_(arr.length, 5);
 
                     var paths = arr.map(x => x.url);
@@ -247,7 +247,7 @@ UTest({
                     body.foo {}
                 `,
                 'index.html': `
-                    <!doctype html>                    
+                    <!doctype html>
                     <script type='text/mask'>
                         import Foo from './Foo';
                     </script>
@@ -260,10 +260,10 @@ UTest({
                     package: {
                         module: 'includejs'
                     },
-                    silent: true
+                    //silent: true
                 })
                 .then(arr => arr.map(x => x.toJSON(false)))
-                .done(arr => {
+                .then(arr => {
                     eq_(arr.length, 4);
 
                     var paths = arr.map(x => x.url);

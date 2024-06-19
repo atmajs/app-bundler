@@ -9,7 +9,7 @@ import { Solution } from './class/Solution';
 import { io } from './global'
 import { Configuration } from './config/Configuration';
 import { ISolutionOptions } from './class/SolutionOpts';
-import { res_flattern } from './utils/res';
+import { res_flattern as res_flatten } from './utils/res';
 import { tree_async } from './utils/tree';
 import { Builder } from './builder/Builder';
 import { color } from './utils/color';
@@ -43,9 +43,9 @@ export class Bundler extends class_EventEmitter {
     }
 
     getResourceTree(opts?) {
-        var solution = this.solution,
-            type = solution.opts.type,
-            path = solution.path;
+        let solution = this.solution;
+        let type = solution.opts.type;
+        let path = solution.path;
 
         return Loader
             .load(type, path, opts, solution)
@@ -57,42 +57,45 @@ export class Bundler extends class_EventEmitter {
     }
 
     getResources(opts?) {
-        var solution = this.solution,
-            type = solution.opts.type,
-            path = solution.path;
+        let solution = this.solution;
+        let type = solution.opts.type;
+        let path = solution.path;
 
         return Loader.load(type, path, opts, solution).then(resource => {
-            return res_flattern(resource, solution.opts.dependencies).map(x => x);
+            return res_flatten(resource, solution.opts.dependencies).map(x => x);
         });
     }
-    static getResources(path, opts) {
+    static getResources(path: string, opts: ISolutionOptions) {
         return new Bundler(path, opts).getResources();
     }
 
-    build(opts?) {
-        var solution = this.solution,
-            type = solution.opts.type,
-            path = solution.path,
-            shouldRebuild = false,
-            isBuilding = false,
-            isRebuilding = false,
-            rootResource = null,
-            self = this;
+    build(opts?: ISolutionOptions): Promise<Resource[]> {
+        let solution = this.solution;
+        let type = solution.opts.type;
+        let path = solution.path;
+        let shouldRebuild = false;
+        let isBuilding = false;
+        let isRebuilding = false;
+        let rootResource = null;
+        let self = this;
 
-
-        function build(resource) {
+        function build(resource: Resource) {
             isBuilding = true;
-            var resources = res_flattern(resource, solution.opts.dependencies);
+            let resources = res_flatten(resource, solution.opts.dependencies);
+
             return tree_async({
-                resources,
                 reporter: solution.reporter,
-                action: () =>
-                    Builder.build(resources, solution),
-                message: (treeInfo, seconds) =>
-                    color(`Created bold<yellow<${treeInfo.count}>> files in bold<yellow<${seconds}>> sec.`)
-            }).done(buildComplete).fail(buildFailed);
+                action: () => {
+                    return Builder.build(resources, solution)
+                },
+                message: (treeInfo, seconds) => {
+                    return color(`Created bold<yellow<${treeInfo.count}>> files in bold<yellow<${seconds}>> sec.`)
+                }
+            })
+            .done(buildComplete)
+            .fail(buildFailed);
         }
-        function buildComplete(resources) {
+        function buildComplete(resources: unknown) {
             isBuilding = false;
             if (shouldRebuild) {
                 shouldRebuild = false;
@@ -105,7 +108,7 @@ export class Bundler extends class_EventEmitter {
                 self.emit('rebuild', resources);
             }
         }
-        function buildFailed(error) {
+        function buildFailed(error: any) {
             isBuilding = false;
             if (isRebuilding) {
                 solution.reporter.error(color('red<Build Failed>'));
@@ -152,10 +155,10 @@ export class Bundler extends class_EventEmitter {
     }
 
     static process(path: string, opts: ISolutionOptions) {
-        var bundler = new Bundler(path, opts);
-        var solution = bundler.solution;
+        let bundler = new Bundler(path, opts);
+        let solution = bundler.solution;
 
-        function builderComplete(resources) {
+        function builderComplete(resources: Resource[]) {
             resources.forEach(res => {
                 io.File.write(res.filename, res.content);
             });
@@ -187,8 +190,8 @@ export class Bundler extends class_EventEmitter {
             getDependencies(content, opts: ISolutionOptions = { type: 'js' }) {
                 if (typeof opts === 'string') opts = { type: opts };
 
-                var solution = new Solution('', opts);
-                var resource = new Resource({ type: opts.type, content: content }, null, solution);
+                let solution = new Solution('', opts);
+                let resource = new Resource({ type: opts.type, content: content }, null, solution);
                 return Parser.getDependencies(resource, solution);
             }
         }

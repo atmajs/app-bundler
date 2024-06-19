@@ -9,14 +9,14 @@ export interface IWorkerInfo {
     }
 }
 
-export function tree_async(workerInfo: IWorkerInfo) {
+export function tree_async(workerInfo: IWorkerInfo): class_Dfr {
     let start = Date.now();
-    let dfr;
+    let dfr: class_Dfr;
     try {
         dfr = workerInfo.action();
     } catch (error) {
         console.error(error);
-        return class_Dfr.reject(error);
+        return class_Dfr.reject(error) as class_Dfr;
     }
     let reporter = workerInfo.reporter;
 

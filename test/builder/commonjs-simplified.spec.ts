@@ -52,8 +52,8 @@ UTest({
                 'main.js': `
                     module.exports = require('baz');
                 `,
-                'node_modules/baz/package.json':  { 
-                    "main": "lib/some.js" 
+                'node_modules/baz/package.json':  {
+                    "main": "lib/some.js"
                 },
                 'node_modules/baz/lib/some.js': `
                     module.exports = 'a foo some';

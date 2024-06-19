@@ -2,7 +2,6 @@ import alot from 'alot'
 import { class_Dfr, obj_extend } from 'atma-utils'
 import { res_getTreeInfo, res_walk } from '../utils/res';
 import { path_getExtension } from '../utils/path';
-import { async_resolve, async_waterfall } from '../utils/async';
 import { Parser } from '../parser/Parser';
 import * as assert from 'assert'
 import { Resource } from '../class/Resource';
@@ -42,7 +41,7 @@ export const Loader = {
                 return loader.resource;
             });
     },
-    loadResource(resource) {
+    loadResource(resource: any) {
         return ResourceLoader
             .loadResource(resource, this.opts, this.solution)
             .promise
@@ -98,7 +97,7 @@ namespace ResourceLoader {
 
         return loader.promise;
     }
-    export function loadResource(resource, opts, solution) {
+    export function loadResource(resource: Resource, opts: any, solution: Solution) {
         let loader = __loaders[resource.filename];
         if (loader == null) {
             loader = __loaders[resource.filename] = new TreeLoader(resource, opts, solution);
@@ -168,20 +167,23 @@ namespace ResourceLoader {
 
             try {
                 let start = Date.now();
-                let reader = Configuration.Instance.get('readFile');
+                let reader = this.resource.isGlob
+                    ? Configuration.Instance.get('readDirectory')
+                    : Configuration.Instance.get('readFile');
 
                 let content = await reader(this.resource.filename, this.opts);
                 let handler = this.solution.handlers.find(x => x.parser.accepts(this.resource.type))
-                if (handler?.parser?.transpile !== null) {
+                if (handler?.parser?.transpile != null) {
                     let result = await handler.parser.transpile(content, this.resource);
                     content = result?.content ?? content;
                 }
 
                 let end = Date.now();
-                this.solution.reporter.print(color(` cyan<${end - start}> ms \n`));
+                this.solution.reporter.print(color(` cyan<${end - start}> ms`));
                 this.resource.content = content;
 
-                if (this.resource.type === 'data' || this.resource.type === 'load') {
+                if (this.resource.type === 'data') {
+                    this.solution.reporter.print('\n');
                     this.promise.resolve(this);
                     return;
                 }
@@ -193,12 +195,14 @@ namespace ResourceLoader {
         }
         private processChildren() {
             if (this.shouldSkipChildren()) {
+                this.solution.reporter.print(` (skip deps)`);
                 this.promise.resolve(this);
                 return;
             }
             Parser
                 .getDependencies(this.resource, this.solution)
                 .then(result => {
+                    this.solution.reporter.print(color(` cyan<${result.dependencies?.length}> dep\n`));
                     this.loadChildren(result).catch(err => {
                         this.promise.reject(err);
                     });
@@ -235,7 +239,9 @@ namespace ResourceLoader {
                     this.resource.content = str;
                     dep.url = res.url;
                 }
-            })
+            });
+
+
 
             this.resource.resources.push(...resources);
             this.promise.resolve(this);

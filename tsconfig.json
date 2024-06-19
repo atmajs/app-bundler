@@ -1,6 +1,11 @@
 {
     "exclude": ["node_modules"],
     "compilerOptions": {
+        "baseUrl": "./",
+        "paths": {
+            "@fixtures/*": [ "test/fixtures/typescript/src/*" ],
+        },
+
         "outDir": "ts-temp",
         "lib": ["es2015", "es2015.promise", "es2016", "dom"],
         "typeRoots": [

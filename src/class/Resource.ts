@@ -44,6 +44,9 @@ export class Resource {
     isCyclic: boolean = false
     isMapped: boolean = false
 
+    // when the path is like "/foo/bar/**.ts"
+    isGlob:   boolean = false
+
     meta?: ResourceMeta = null
     dependencies: ResourceInfo[]
 
@@ -75,6 +78,8 @@ export class Resource {
         this.asModules = [];
         this.inPages = [];
         this.source = null;
+        this.isGlob = /\*+\.\w+$/.test(includeData.url);
+
 
         if (includeData.bundle) {
             this.bundle = includeData.bundle;
@@ -130,7 +135,12 @@ export class Resource {
         }
         if (Include.PathResolver.isNpm(includeData.url)) {
             this.aliases.push(includeData.url);
-            url = Npm.resolveAppUrl(includeData.url, parent && parent.location, solution.opts.base);
+
+            let byNpmResolver = Npm.resolveAppUrl(includeData.url, parent && parent.location, solution.opts.base);
+            if (byNpmResolver != null) {
+                // otherwise "url" could be previously resolved with pathResolver.resolve
+                url = byNpmResolver;
+            }
 
             if (url == null) {
                 // Fix. `resolveAppUrl` returns undefined on native nodejs modules
@@ -176,7 +186,6 @@ export class Resource {
         }
 
         this.solution = solution;
-
         return this;
     }
     clone () {
@@ -198,6 +207,8 @@ export class Resource {
         res.source = this.source;
         res.isCyclic = this.isCyclic;
         res.aliases = this.aliases;
+        res.isGlob = this.isGlob;
+        res.dependencies = this.dependencies;
         return res;
     }
     toTarget (solution: Solution, settings?: {targetType?: string, relative?: boolean }) {
@@ -212,6 +223,7 @@ export class Resource {
         resource.inPages = this.inPages;
         resource.bundle = this.bundle;
         resource.aliases = this.aliases;
+        resource.isGlob = this.isGlob;
 
         if (solution.opts.version && this.parent?.type !== 'load') {
             resource.url += '?v=' + solution.opts.version;
@@ -310,7 +322,7 @@ export class Resource {
             return modules[0];
         }
 
-        let arr = ['global', 'commonjs', 'amd', 'includejs', 'import'];
+        let arr = ['global', 'commonjs', 'amd', 'includejs', 'import', 'esm'];
         let name = arr.find(name => modules.indexOf(name) !== -1);
         if (name == null) {
             name = modules[0];

@@ -1,6 +1,6 @@
 {
     "name": "app-bundler",
-    "version": "0.1.17",
+    "version": "0.2.1",
     "description": "",
     "main": "lib/bundler.js",
     "bin": {
@@ -36,8 +36,7 @@
         "alot": "^0.3.0",
         "appcfg": "^0.4.64",
         "atma-class": "^1.1.83",
-        "atma-io": "^1.2.60",
-        "atma-loader-ts": "^1.1.18",
+        "atma-io": "^1.2.73",
         "atma-logger": "^1.0.2",
         "atma-utils": "^0.1.13",
         "axios": "^0.21.0",
@@ -50,7 +49,8 @@
     },
     "atma": {
         "plugins": [
-            "atma-loader-ts"
+            "atma-loader-ts",
+            "atma-io-middleware-importer"
         ],
         "settings": {
             "include": {
@@ -93,7 +93,8 @@
     "devDependencies": {
         "@types/node": "^8.5.2",
         "atma": "^0.15.15",
-        "atma-io-middleware-importer": "^1.1.34",
+        "atma-io-middleware-importer": "^1.1.38",
+        "atma-loader-ts": "^1.2.4",
         "selenium-query": "^0.52.59",
         "tslib": "^1.11.1",
         "uglify-es": "^3.3.9"

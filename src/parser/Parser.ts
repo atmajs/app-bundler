@@ -9,7 +9,7 @@ import { ResourceInfo } from '../class/ResourceInfo';
 import { Resource } from '../class/Resource';
 
 export const Parser = {
-    getDependencies(resource, solution): PromiseLike<ResourceInfo> {
+    getDependencies(resource: Resource, solution: Solution): PromiseLike<ResourceInfo> {
         assert(resource != null, 'Resource is empty');
         assert(solution instanceof Solution, 'Solution is not passed');
 
@@ -33,6 +33,20 @@ export const Parser = {
 function getDependenciesInternal(resource: Resource, solution: Solution) {
     assert(typeof resource.url === 'string', 'Path is expected');
 
+    if (resource.isGlob) {
+        let paths = resource.content as any as string[];
+        let resInfos = paths.map(path => {
+            return {
+                type: resource.type,
+                url: path,
+                module: resource.module,
+                page: resource.page
+            } as ResourceInfo;
+        });
+        let result = { dependencies: resInfos }
+        return async_resolve(result);
+    }
+
     let ext = path_getExtension(resource.url);
     let handler = solution.handlers.find(x => x.parser.accepts(resource.type) || x.parser.accepts(ext))
     if (handler == null) {
@@ -48,7 +62,7 @@ function getDependenciesExternal(deps, resource, solution) {
         .then(() => deps)
         ;
 }
-function filterDynamicDeps(info, solution) {
+function filterDynamicDeps(info: { dependencies: any[]; }, solution: Solution) {
     info.dependencies = info.dependencies.filter(dep => isDynamicDependency(dep, solution) === false);
     return info;
 }

@@ -21,7 +21,7 @@ export class Configuration {
     }
 
     defineMany (options) {
-        for (var key in options) {
+        for (let key in options) {
             this.define(key, options[key]);
         }
     }

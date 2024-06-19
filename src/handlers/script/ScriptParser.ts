@@ -24,7 +24,7 @@ export class ScriptParser extends BaseParser {
     }
 
 
-    getDependencies(content, ownerResource) {
+    getDependencies(content: string, ownerResource: Resource) {
         if (!content) {
             throw new Error(`Content is undefined for ${ownerResource.filename}`);
         }
@@ -49,7 +49,7 @@ export class ScriptParser extends BaseParser {
             if (error.filename == null) {
                 error.filename = ownerResource.filename
             }
-            return async_reject(error);
+            return async_reject(error) as PromiseLike<{ dependencies: ResourceInfo[] }>;
         }
 
         let dfrs = this
@@ -61,7 +61,8 @@ export class ScriptParser extends BaseParser {
 
         return async_whenAll(dfrs).then(results => {
             let arr = arr_flattern(results);
-            return ResourceInfo.merge(...arr);
+            let merged = ResourceInfo.merge(...arr);
+            return merged;
         }) as PromiseLike<{ dependencies: ResourceInfo[] }>;
     }
 

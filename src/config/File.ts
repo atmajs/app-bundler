@@ -9,7 +9,20 @@ export const FileActions = {
         }
         return io.File.readAsync(path, opts)
     },
-    writeFile (path, content, opts){
+    async readDirectory (path: string, opts) {
+
+        let i = path.indexOf('*');
+        let patternI = path.lastIndexOf('/', i);
+        if (patternI === -1) {
+            throw new Error(`Invalid glob pattern: ${path}`);
+        }
+        let pattern = path.substring(patternI + 1);
+        let directory  = path.substring(0, patternI + 1)
+        let files = await io.Directory.readFiles(directory, pattern);
+        let paths = files.map(x => x.uri.toString());
+        return paths;
+    },
+    writeFile (path: string, content: string, opts){
         return io.File.writeAsync(path, content, opts);
     },
     clearFileCache () {

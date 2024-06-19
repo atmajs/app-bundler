@@ -1,4 +1,4 @@
-var isWeb = true;
+let isWeb = true;
 
 export function path_getDir(path) {
     return path.substring(0, path.lastIndexOf('/') + 1);
@@ -16,16 +16,16 @@ export function path_getFile(path) {
     return path;
 };
 export function path_getExtension(path: string) {
-    var query = path.indexOf('?');
+    let query = path.indexOf('?');
     if (query !== -1) {
         path = path.substring(0, query);
     }
-    var match = rgx_EXT.exec(path);
+    let match = rgx_EXT.exec(path);
     return match == null ? '' : match[1];
 };
 
 export function path_appendQuery(path: string, key: string, val: string) {
-    var conjunctor = path.indexOf('?') === -1 ? '?' : '&';
+    let conjunctor = path.indexOf('?') === -1 ? '?' : '&';
     return path + conjunctor + key + '=' + val;
 };
 
@@ -34,7 +34,7 @@ export function path_withProtocol(path: string) {
 };
 
 
-var current_: string;
+let current_: string;
 
 export function path_resolveCurrent() {
     if (current_ != null) return current_;
@@ -44,7 +44,7 @@ export function path_resolveCurrent() {
 
 
 export function path_normalize(path) {
-    var path_ = path
+    let path_ = path
         .replace(/\\/g, '/')
         // remove double slashes, but not near protocol
         .replace(/([^:\/])\/{2,}/g, '$1/')
@@ -61,7 +61,7 @@ export function path_normalize(path) {
     return path_collapse(path_);
 };
 export function path_resolveUrl(path, base) {
-    var url = path_normalize(path);
+    let url = path_normalize(path);
     if (path_isRelative(url)) {
         return path_normalize(path_combine(base || path_resolveCurrent(), url));
     }
@@ -91,9 +91,9 @@ export function path_toRelative(path: string, anchor: string, base?: string) {
     if (path_.toUpperCase().indexOf(absolute_.toUpperCase()) === 0) {
         return path_.substring(absolute_.length);
     } else {
-        var sub = '../';
+        let sub = '../';
         while (true) {
-            var folder = absolute_.replace(/[^\/]+\/?$/, '');
+            let folder = absolute_.replace(/[^\/]+\/?$/, '');
             if (folder === '' || folder === absolute_) {
                 break;
             }
@@ -108,9 +108,9 @@ export function path_toRelative(path: string, anchor: string, base?: string) {
 };
 
 export function path_combine(...args: string[]) {
-    var out = '',
-        imax = args.length,
-        i = -1, x;
+    let out = '';
+    let imax = args.length;
+    let i = -1, x;
     while (++i < imax) {
         x = args[i];
         if (!x) continue;
@@ -132,28 +132,48 @@ export function path_combine(...args: string[]) {
 };
 
 export function path_sliceHash(url) {
-    if (url == null) return null;
-    var i = url.indexOf('#');
-    if (i === -1) return null;
+    if (url == null) {
+        return null;
+    }
+    let i = url.indexOf('#');
+    if (i === -1) {
+        return null;
+    }
     return url.substring(i);
 };
 export function path_sliceQuery(url) {
-    if (url == null) return null;
-    var i = url.indexOf('?');
-    if (i === -1) return null;
+    if (url == null) {
+        return null;
+    }
+    let i = url.indexOf('?');
+    if (i === -1) {
+        return null;
+    }
     return url.substring(i);
 };
 export function path_removeQuery(url) {
-    if (url == null) return null;
-    var i = url.indexOf('#');
-    if (i !== -1) url = url.substring(0, i);
-
-    var i = url.indexOf('?');
-    if (i !== -1) url = url.substring(0, i);
-
+    if (url == null) {
+        return null;
+    }
+    let i = url.indexOf('#');
+    if (i !== -1) {
+        url = url.substring(0, i);
+    }
+    i = url.indexOf('?');
+    if (i !== -1) {
+        url = url.substring(0, i);
+    }
     return url;
 };
 
+export function path_changeExtension (path: string, ext: string) {
+    let str = ext ? '.' + ext : '';
+    let i = path.indexOf('.');
+    if (i === -1) {
+        return path + str;
+    }
+    return path.substring(0, i) + str;
+}
 
 
 export function path_toAbsolute(path, parentLocation?, rootLocation?) {
@@ -173,13 +193,13 @@ export function path_toAbsolute(path, parentLocation?, rootLocation?) {
     return path_combine(parentLocation, path);
 };
 
-var _cwd;
+let _cwd;
 function cwd() {
     return _cwd || (_cwd = path_normalize(process.cwd()));
 }
 
 
-var rgx_PROTOCOL = /^(file|https?):/i,
+let rgx_PROTOCOL = /^(file|https?):/i,
     rgx_SUB_DIR = /[^\/\.]+\/\.\.\//,
     rgx_FILENAME = /\/[^\/]+\.\w+(\?.*)?(#.*)?$/,
     rgx_EXT = /\.(\w+)$/,
@@ -195,7 +215,7 @@ function path_win32Normalize(path) {
 }
 
 function path_collapse(url_) {
-    var url = url_;
+    let url = url_;
     while (rgx_SUB_DIR.test(url)) {
         url = url.replace(rgx_SUB_DIR, '');
     }

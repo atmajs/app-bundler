@@ -13,7 +13,7 @@ import { IImporterOptions } from '../handlers/script/import-js/ModuleFile';
 
 
 interface IPackageOptions {
-    module?: 'commonjs' | 'includejs' | 'global' | 'import'
+    module?: 'commonjs' | 'includejs' | 'amd' | 'global' | 'import'
     type?: 'module' | 'bundle'
     moduleWrapper?: 'umd' | 'iif' | 'script' | 'custom'
     moduleWrapperCustomPath?: string
@@ -79,6 +79,8 @@ export interface ISolutionOptions {
     rewrites?: { [appUrl: string]: string }
 
     dependencies?: { [sourcePath: string]: string }
+
+    settings?: Record<string, any>
 }
 
 export class SolutionOptsBase {
