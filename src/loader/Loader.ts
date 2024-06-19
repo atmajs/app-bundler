@@ -172,6 +172,12 @@ namespace ResourceLoader {
                     : Configuration.Instance.get('readFile');
 
                 let content = await reader(this.resource.filename, this.opts);
+                if (this.resource.isGlob && Array.isArray(content) && this.solution.opts.ignore) {
+                    let rgxArr = this.solution.opts.ignore.map(path => new RegExp(path, 'i'));
+                    content = content.filter(path => {
+                        return rgxArr.some(rgx => rgx.test(path)) === false
+                    });
+                }
                 let handler = this.solution.handlers.find(x => x.parser.accepts(this.resource.type))
                 if (handler?.parser?.transpile != null) {
                     let result = await handler.parser.transpile(content, this.resource);

@@ -50,6 +50,8 @@ export interface ISolutionOptions {
     base?: string
     version?: string
 
+    ignore?: string[]
+
     mainPage?: string
     mainBundle?: string
     mainContent?: string
@@ -88,6 +90,8 @@ export class SolutionOptsBase {
     type: string
     base: string
     version: string
+
+    ignore: string[]
 
     mainPage: string
     mainBundle: string
@@ -132,6 +136,8 @@ export class SolutionOpts extends SolutionOptsBase {
         mainPage: 'main',
         mainBundle: '',
         mainContent: null,
+
+        ignore: null,
 
         outputBase: '',
         outputAppBase: '/',
