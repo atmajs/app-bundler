@@ -19,14 +19,14 @@ export class OutputResources {
         this.items = [];
 
         let root = resources.pop();
+        this.rootInput = root;
+        this.pagesInput = res_groupByPageAndBundles(resources, this.solution.opts);
+
         let isGlob = root.isGlob;
         if (isGlob !== true) {
             this.rootOutput = root.toTarget(this.solution);
             this.rootOutput.content = root.content;
         }
-
-        this.rootInput = root;
-        this.pagesInput = res_groupByPageAndBundles(resources, this.solution.opts);
 
         Object.keys(this.pagesInput).forEach(page => {
 
