@@ -19,6 +19,9 @@ export const Templates = {
     UMD: `
 // import ./UMD.js
 `,
+    ESM: `
+// import ./UMD.js
+`,
     Style: `
 // import ./Style.js
 `,
@@ -26,7 +29,7 @@ export const Templates = {
 // import ./Mask.js
 `,
     load (path: string) {
-        let template = io.File.read(path);
+        let template = io.File.read<string>(path);
         if (!template) {
             throw new Error(`Custom module wrapper not found: ${path}`)
         }

@@ -17,6 +17,9 @@ export class ModuleWrapper {
             case 'umd':
                 body = this.wrapWithUMD(body);
                 break;
+            case 'esm':
+                body = this.wrapWithESM(body);
+                break;
             case 'custom':
                 body = this.wrapWithCustom(body);
                 break;
@@ -45,6 +48,15 @@ export class ModuleWrapper {
             .UMD
             .replace('%MODULE%', () => body)
             .replace('%NAME%', () => name)
+            ;
+    }
+    private wrapWithESM(body) {
+        var opts = this.solution.opts.package;
+        var exportsCode = opts.moduleExportsCode || '';
+        return Templates
+            .ESM
+            .replace('$CUSTOM_EXPORTS_CODE$', () => exportsCode)
+            .replace('$MODULE$', () => body)
             ;
     }
     private wrapWithCustom(body) {

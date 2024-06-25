@@ -15,7 +15,8 @@ import { IImporterOptions } from '../handlers/script/import-js/ModuleFile';
 interface IPackageOptions {
     module?: 'commonjs' | 'includejs' | 'amd' | 'global' | 'import'
     type?: 'module' | 'bundle'
-    moduleWrapper?: 'umd' | 'iif' | 'script' | 'custom'
+    moduleWrapper?: 'umd' | 'esm' | 'iif' | 'script' | 'custom'
+    moduleExportsCode?: string
     moduleWrapperCustomPath?: string
     moduleName?: string,
     import?: IImporterOptions
