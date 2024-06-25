@@ -20,7 +20,7 @@ export const Templates = {
 // import ./UMD.js
 `,
     ESM: `
-// import ./UMD.js
+// import ./ESM.js
 `,
     Style: `
 // import ./Style.js
