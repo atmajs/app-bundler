@@ -108,11 +108,11 @@ export function async_whenAll(mix) {
 	return dfr;
 };
 
-export function async_resolve(...args) {
-	return (new class_Dfr()).resolve(...args);
+export function async_resolve<T>(result: T) {
+	return (new class_Dfr()).resolve(result) as any as Promise<T>;
 };
-export function async_reject(...args) {
-	return (new class_Dfr()).reject(...args);
+export function async_reject(error: Error) {
+	return (new class_Dfr()).reject(error);
 };
 
 export function async_run(fn) {
@@ -121,7 +121,7 @@ export function async_run(fn) {
 		if (result && result.then)
 			return result;
 
-		return async_resolve();
+		return async_resolve(null);
 	}
 	return class_Dfr.run((resolve, reject) => {
 		fn(resolve, reject);

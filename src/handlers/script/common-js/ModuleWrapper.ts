@@ -6,7 +6,7 @@ export class ModuleWrapper {
 
     }
     wrap (body: string) {
-        var wrapper = this.solution.opts.package.moduleWrapper;
+        let wrapper = this.solution.opts.package.moduleWrapper;
         switch (wrapper) {
             case 'script':
                 body = this.wrapSimple(body);
@@ -42,19 +42,46 @@ export class ModuleWrapper {
     }
 
     private wrapWithUMD(body) {
-        var opts = this.solution.opts.package;
-        var name = opts.moduleName || '';
+        let opts = this.solution.opts.package;
+        let name = opts.moduleName || '';
         return Templates
             .UMD
             .replace('%MODULE%', () => body)
             .replace('%NAME%', () => name)
             ;
     }
-    private wrapWithESM(body) {
-        var opts = this.solution.opts.package;
-        var exportsCode = opts.moduleExportsCode || '';
+    private wrapWithESM(body: string) {
+        let opts = this.solution.opts.package;
+        let exportsCode = opts.moduleExportsCode || '';
+        let importsCode = opts.moduleImportsCode || '';
+
+        let deps = this.solution.outputResources.dynamicDependencies;
+        if (deps.length > 0) {
+            let arr = deps.map(dep => {
+                let key = `bundlerDynamic_${ dep.url.replace(/[^\w]/g, '_') }`;
+                return {
+                    url: dep.url,
+                    key
+                };
+            });
+            let strImports = arr.map(item => `import ${item.key} from '${item.url}';`).join('\n');
+            let strCollection = `const bundlerDynamicRepository = {};\n`
+                + arr.map(item => `bundlerDynamicRepository['${item.url}'] = ${item.key};`)
+                    .join('\n');
+            let strRequire = [
+                `var bundlerOriginalRequire = require || function (url) { throw new Error('Not found: ' + url); };`,
+                `var require = function (url) { return bundlerDynamicRepository[url] || bundlerOriginalRequire(url); };`
+            ].join('\n');
+            importsCode = [
+                strImports,
+                strCollection,
+                strRequire
+            ].join('\n');
+        }
+
         return Templates
             .ESM
+            .replace('$CUSTOM_IMPORTS_CODE$', () => importsCode)
             .replace('$CUSTOM_EXPORTS_CODE$', () => exportsCode)
             .replace('$MODULE$', () => body)
             ;

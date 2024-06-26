@@ -6,9 +6,9 @@ import { HtmlHandler } from './html/HtmlHandler';
 
 
 export const Handlers = [
-	LoadHandler,
-	MaskHandler,
-	ScriptHandler,
-	CssHandler,
-	HtmlHandler
+    LoadHandler,
+    MaskHandler,
+    ScriptHandler,
+    CssHandler,
+    HtmlHandler
 ]

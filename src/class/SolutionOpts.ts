@@ -58,6 +58,7 @@ export interface ISolutionOptions {
     mainContent?: string
 
     outputBase?: string
+    outputExtension?: 'js' | string
     outputAppBase?: string
     outputMain?: string
     outputSources?: string
@@ -98,6 +99,7 @@ export class SolutionOptsBase {
     mainBundle: string
     mainContent: string
     outputBase: string
+    outputExtension: 'js' | string
     outputAppBase: string
 
     output: string
@@ -147,6 +149,7 @@ export class SolutionOpts extends SolutionOptsBase {
         outputSources: '{output}/build/{build}',
         outputAssets: '{output}/build/{build}/assets',
         outputShareBase: null,
+        outputExtension: 'js',
         package: {
             module: 'commonjs',
             modules: ['commonjs', 'includejs', 'global', 'import'],
@@ -155,7 +158,7 @@ export class SolutionOpts extends SolutionOptsBase {
             types: ['module', 'bundle'],
 
             moduleWrapper: 'iif',
-            moduleWrappers: ['umd', 'iif', 'script', 'custom'],
+            moduleWrappers: ['umd', 'esm', 'iif', 'script', 'custom'],
             moduleName: '',
             import: null,
 
@@ -164,6 +167,7 @@ export class SolutionOpts extends SolutionOptsBase {
             '': { type: 'js' },
 
             'js': { type: 'js' },
+            'mjs': { type: 'js' },
             'es6': { type: 'js' },
             'jsx': { type: 'js' },
             'ts': { type: 'js' },

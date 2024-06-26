@@ -3,7 +3,7 @@ import { BaseScriptBuilder } from "../base/BaseScriptBuilder";
 import { OutputItem } from "../../../class/OutputResources";
 import { Resource } from "../../../class/Resource";
 import { class_Uri } from "atma-utils";
-import { path_changeExtension, path_isRelative, path_toRelative } from "../../../utils/path";
+import { path_changeExtension, path_hasExtension, path_isRelative, path_toRelative } from "../../../utils/path";
 
 import { Configuration } from '../../../config/Configuration';
 
@@ -90,6 +90,9 @@ export class CopyJsBuilder extends BaseScriptBuilder {
                         return;
                     }
                     if (dep.resource.filename.startsWith(appBase) === false) {
+                        // if (path_hasExtension(dep.url) === false) {
+                        //     rewriteToRelativeUrls[dep.url] = dep.url + '.' + this.solution.opts.outputExtension;
+                        // }
                         // is project dependency
                         return;
                     }
@@ -98,7 +101,7 @@ export class CopyJsBuilder extends BaseScriptBuilder {
                         return;
                     }
 
-                    relativePath = path_changeExtension(relativePath, null);
+                    relativePath = path_changeExtension(relativePath, this.solution.opts.outputExtension);
                     relativePath = relativePath.startsWith('.')
                         ? relativePath
                         : './' + relativePath;
@@ -107,11 +110,11 @@ export class CopyJsBuilder extends BaseScriptBuilder {
                 })
                 .toArray();
 
-            resource.content = rewriteUrls(resource.content, rewriteToRelativeUrls);
+            resource.content = rewriteUrls(resource, rewriteToRelativeUrls);
         }
 
         let result = [
-            createOutputItem(cloneWithExtension(resource, 'js'))
+            createOutputItem(cloneWithExtension(resource, this.solution.opts.outputExtension))
         ];
 
         let extra = [{
@@ -127,8 +130,13 @@ export class CopyJsBuilder extends BaseScriptBuilder {
         await alot(extra).forEachAsync(async x => {
             let cloned = cloneWithExtension(resource, x.ext);
 
-            cloned.content = await readFile(cloned.filename);
-            cloned.content = rewriteUrls(cloned.content, rewriteToRelativeUrls);
+            try {
+                cloned.content = await readFile(cloned.filename);
+            } catch (e) {
+                console.error(`Error loading ${resource.filename} from ${parent.resource.filename}`);
+                throw e;
+            }
+            cloned.content = rewriteUrls(cloned, rewriteToRelativeUrls);
 
             result.push(
                 createOutputItem(cloneWithExtension(cloned, x.output))
@@ -165,10 +173,16 @@ export class CopyJsBuilder extends BaseScriptBuilder {
         }
 
 
-        function rewriteUrls (content: string, rewriteToRelativeUrls: Record<string, string>): string {
-
+        function rewriteUrls (resource: Resource, rewriteToRelativeUrls: Record<string, string>): string {
+            let content = resource.content as any;
+            if (content == null) {
+                console.error(`<rewrite urls> No content for ${resource.filename}`);
+                return '';
+            }
             for (let key in rewriteToRelativeUrls) {
-                content = content.replaceAll(key, rewriteToRelativeUrls[key]);
+                content = content
+                    .replaceAll(`"${key}"`, `"${rewriteToRelativeUrls[key]}"`)
+                    .replaceAll(`'${key}'`, `'${rewriteToRelativeUrls[key]}'`);
             }
             return content;
         }

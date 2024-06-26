@@ -20,7 +20,7 @@ export abstract class BaseParser {
         return Promise.resolve({ content });
     }
 
-    getDependencies(content: string, ownerResource: Resource): PromiseLike<ResourceInfo> {
+    getDependencies(content: string, ownerResource: Resource): Promise<ResourceInfo> {
         throw new Error('Not implemented');
     }
 

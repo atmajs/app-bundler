@@ -168,7 +168,15 @@ export function path_removeQuery(url) {
 
 export function path_changeExtension (path: string, ext: string) {
     let str = ext ? '.' + ext : '';
+    if (path_hasExtension(path) === false) {
+        return `${path}${str}`
+    }
     return path.replace(/(\.\w+)+$/, str);
+}
+
+
+export function path_hasExtension (path: string) {
+    return /\.\w+$/.test(path);
 }
 
 

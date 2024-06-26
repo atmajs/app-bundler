@@ -1,3 +1,5 @@
+$CUSTOM_IMPORTS_CODE$
+
 var module = {
     exports: {}
 };

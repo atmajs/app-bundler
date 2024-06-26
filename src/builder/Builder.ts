@@ -23,7 +23,7 @@ export const Builder = {
                     .then(() => solution.outputResources.getAll());
             });
 
-        function rewriteDependenciesInternal(resources) {
+        function rewriteDependenciesInternal(resources: Resource[]) {
             let promises = resources.map(resource => {
                 let ext = path_getExtension(resource.url);
                 let handler = solution.handlers.find(x =>

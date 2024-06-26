@@ -1,6 +1,7 @@
 import { Resource } from './Resource';
 import { Solution } from "./Solution";
 import { res_groupByPageAndBundles, res_groupResourcesByType } from '../utils/res';
+import type { Include } from './Include';
 
 export class OutputResources {
 
@@ -9,6 +10,8 @@ export class OutputResources {
     pagesInput: any = {}
     rootInput: Resource
     rootOutput: Resource
+    dynamicDependencies: Include[] = []
+
     constructor (public solution: Solution) {
 
     }
@@ -62,6 +65,24 @@ export class OutputResources {
 
             });
         });
+    }
+
+    addDynamicDependency (dep: Include) {
+        let has = this.dynamicDependencies.some(x => x.url === dep.url);
+        if (has === false) {
+            this.dynamicDependencies.push(dep);
+        }
+    }
+
+    remove (resource: Resource) {
+        for (let i = 0; i < this.items.length; i++) {
+            let item = this.items[i];
+            let itemResource = item.resources.find(x => x.filename === resource.filename);
+            if (itemResource !== null) {
+                let idx = item.resources.indexOf(itemResource);
+                item.resources.splice(idx, 1);
+            }
+        }
     }
 
     getForPage (page) {

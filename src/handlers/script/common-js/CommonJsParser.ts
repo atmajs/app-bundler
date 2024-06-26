@@ -7,13 +7,14 @@ import { Resource } from '../../../class/Resource';
 
 export class CommonJsParser extends BaseParser {
 
-    async transpile(content: any, resource: Resource): Promise<{ content: string; }> {
-        if (/\.(yml|json)([^\w]|$)/.test(resource.filename)) {
-            let str = typeof content !== 'string' ? JSON.stringify(content, null, '  ') : content;
-            str = `module.exports = ${str};`;
-            return { content: str };
-        }
-    }
+    // async transpile(content: any, resource: Resource): Promise<{ content: string; }> {
+    //     // we will inline the content instead
+    //     if (/\.(yml|json)([^\w]|$)/.test(resource.filename)) {
+    //         let str = typeof content !== 'string' ? JSON.stringify(content, null, '  ') : content;
+    //         str = `module.exports = ${str};`;
+    //         return { content: str };
+    //     }
+    // }
 
     getDependencies(ast, ownerResource) {
         let info = {

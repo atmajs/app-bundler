@@ -20,27 +20,27 @@ export class ResourceMeta {
 }
 
 export class ResourceInfo {
-    type: ResourceType
-	url?: string
+    type?: ResourceType
+    url?: string
 
     page?: string
     bundle?: string
     module?: string
     pos?: number
     length?: number
-    
+
     content?: string
     namespace?: string
-	
-	dependencies?: ResourceInfo[] = []
+
+    dependencies?: ResourceInfo[] = []
     meta?: ResourceMeta
     resource?: Resource
     import?: ImportNode
-    
-	static merge(...infos: ResourceInfo[]) {		
-		const result = new ResourceInfo;
 
-		infos.forEach(x => {
+    static merge(...infos: ResourceInfo[]) {
+        const result = new ResourceInfo;
+
+        infos.forEach(x => {
 
             if (x.dependencies) {
                 if (result.dependencies == null) {
@@ -53,10 +53,10 @@ export class ResourceInfo {
                     result.meta = {};
                 }
                 Object.assign(result.meta, x.meta);
-            }			
-		});
-		return result;
-	}
+            }
+        });
+        return result;
+    }
 }
 
 export class ImportNode<T = ModuleFile> {

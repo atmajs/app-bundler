@@ -1,5 +1,4 @@
 import { BaseScriptBuilder } from './base/BaseScriptBuilder';
-import { ScriptHandler } from './ScriptHandler';
 import { BaseBuilder } from '../base/BaseBuilder';
 import { GlobalJsHandler } from './global-js/GlobalJsHandler';
 import { CommonJsHandler } from './common-js/CommonJsHandler';

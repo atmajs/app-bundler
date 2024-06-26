@@ -30,7 +30,7 @@ export const Parser = {
     }
 };
 
-function getDependenciesInternal(resource: Resource, solution: Solution) {
+function getDependenciesInternal(resource: Resource, solution: Solution): Promise<ResourceInfo> {
     assert(typeof resource.url === 'string', 'Path is expected');
 
     if (resource.isGlob) {
@@ -63,7 +63,14 @@ function getDependenciesExternal(deps, resource, solution) {
         ;
 }
 function filterDynamicDeps(info: { dependencies: any[]; }, solution: Solution) {
-    info.dependencies = info.dependencies.filter(dep => isDynamicDependency(dep, solution) === false);
+    info.dependencies = info.dependencies.filter(dep => {
+        let isDynamic = isDynamicDependency(dep, solution);
+        if (isDynamic) {
+            solution.outputResources.addDynamicDependency(dep);
+        }
+
+        return isDynamic === false
+    });
     return info;
 }
 function isDynamicDependency(dep, solution) {

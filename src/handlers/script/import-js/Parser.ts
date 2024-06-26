@@ -7,13 +7,13 @@ declare type File = InstanceType<typeof io.File>;
 let Rgx = {
     Imports: {
         full: {
-            rgx: /^[ \t]*import\s*['"]([^'"]+)['"][\t ;]*[\r\n]{0,2}/gm,
+            rgx: /^[ \t]*import\s*(\*\s+as\s+\w+\s+from\s+)?['"](?<path>[^'"]+)['"][\t ;]*[\r\n]{0,2}/gm,
             map (match: RegExpMatchArray) {
                 let $import = new ImportNode();
                 $import.position = match.index;
                 $import.length = match[0].length;
                 $import.type = 'full';
-                $import.path = match[1];
+                $import.path = match.groups.path;
                 return $import;
             }
         },
@@ -29,6 +29,17 @@ let Rgx = {
                 return $import;
             }
         },
+        defaults: {
+            rgx: /^[ \t]*import\s+(?<def>\w+)\s+from\s*['"](?<path>[^'"]+)['"][\t ;]*[\r\n]{0,2}/gm,
+            map(match) {
+                let $import = new ImportNode();
+                $import.position = match.index;
+                $import.length = match[0].length;
+                $import.type = 'full';
+                $import.path = match.groups.path;
+                return $import;
+            }
+        },
         exportAll: {
             rgx: /^[ \t]*export\s+\*\s+from\s*['"]([^'"]+)['"][\t ;]*[\r\n]{0,2}/gm,
             map (match: RegExpMatchArray) {
@@ -36,7 +47,7 @@ let Rgx = {
                 $import.position = match.index;
                 $import.length = match[0].length;
                 $import.type = 'exportAll';
-                $import.path = match[1];                
+                $import.path = match[1];
                 $import.exportAll = true;
                 return $import;
             }
@@ -134,7 +145,7 @@ export class Parser {
         }
         for (let key in Rgx.Imports) {
             let x = <{rgx: RegExp, map: (...args) => ImportNode}> Rgx.Imports[key];
-            x.rgx.lastIndex = 0;            
+            x.rgx.lastIndex = 0;
             for (let match = x.rgx.exec(content); match != null; match = x.rgx.exec(content)) {
                 let result = x.map(match, content);
                 if (Array.isArray(result)) {
@@ -166,7 +177,7 @@ export class Parser {
                 exp.ref = ref;
                 module.exports.push(exp);
             })
-            
+
         });
 
         module.imports.sort((a, b) => a.position < b.position ? -1 : 1);

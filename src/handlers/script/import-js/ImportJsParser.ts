@@ -8,18 +8,19 @@ export class ImportJsParser extends BaseParser {
     /** @TODO: set to false and handle ast in ScriptParser */
     asText = true
 
-    async transpile(content: any, resource: Resource): Promise<{ content: string; }> {
-        if (/\.(yml|json)([^\w]|$)/.test(resource.filename)) {
-            let str = typeof content !== 'string' ? JSON.stringify(content, null, '  ') : content;
-            str = [
-                `const data = ${str};`,
-                `export default data;`
-            ].join('\n');
-            return { content: str };
-        }
-    }
+    // async transpile(content: any, resource: Resource): Promise<{ content: string; }> {
+    //     // we will inline the content instead
+    //     if (/\.(yml|json)([^\w]|$)/.test(resource.filename)) {
+    //         let str = typeof content !== 'string' ? JSON.stringify(content, null, '  ') : content;
+    //         str = [
+    //             `const data = ${str};`,
+    //             `export default data;`
+    //         ].join('\n');
+    //         return { content: str };
+    //     }
+    // }
 
-    getDependencies (content: string, ownerResource: Resource) {
+    async getDependencies (content: string, ownerResource: Resource) {
         if (Parser.supports(content) === false) {
             return null;
         }

@@ -28,6 +28,11 @@ export class ScriptParser extends BaseParser {
         if (!content) {
             throw new Error(`Content is undefined for ${ownerResource.filename}`);
         }
+        if (typeof content !== 'string') {
+            // The data content is loaded as json
+            return Promise.resolve({ dependencies: [] });
+        }
+
         let opts = {
             filename: ownerResource.filename
         };
@@ -63,7 +68,7 @@ export class ScriptParser extends BaseParser {
             let arr = arr_flattern(results);
             let merged = ResourceInfo.merge(...arr);
             return merged;
-        }) as PromiseLike<{ dependencies: ResourceInfo[] }>;
+        }) as Promise<{ dependencies: ResourceInfo[] }>;
     }
 
     accepts(type) {

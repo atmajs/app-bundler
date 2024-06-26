@@ -4,6 +4,7 @@ import { IncludeJsParser } from './IncludeJsParser';
 import { IncludeJsBuilder } from './IncludeJsBuilder';
 import { BaseHandler } from "../../base/BaseHandler";
 import { IncludeJsRewriter } from "./IncludeJsRewriter";
+import { Resource } from '../../../class/Resource';
 
 export class IncludeJsHandler extends BaseHandler {
     static Parser = IncludeJsParser
@@ -19,7 +20,7 @@ export class IncludeJsHandler extends BaseHandler {
         // }
     }
 
-    accepts (resource) {
+    accepts (resource: Resource) {
         if (resource.type !== 'js') {
             return false;
         }
