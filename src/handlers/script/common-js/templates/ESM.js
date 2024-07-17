@@ -1,7 +1,8 @@
 $CUSTOM_IMPORTS_CODE$
 
+var exports = {};
 var module = {
-    exports: {}
+    exports: exports
 };
 
 $MODULE$

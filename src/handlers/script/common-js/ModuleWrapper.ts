@@ -1,5 +1,8 @@
+import { io } from '../../../global';
 import { Solution } from '../../../class/Solution';
+import { ImportJsParser } from '../import-js/ImportJsParser';
 import { Templates } from './templates/Templates';
+import { Parser } from '../import-js/Parser';
 
 export class ModuleWrapper {
     constructor (public solution: Solution) {
@@ -78,6 +81,17 @@ export class ModuleWrapper {
                 strRequire
             ].join('\n');
         }
+
+        let rootPath = this.solution.path;
+        let rootContentRaw = io.File.read<string>(rootPath, { cached: false, skipHooks: true, encoding: 'utf8' });
+        let module = Parser.parse(rootContentRaw, new io.File(this.solution.path));
+
+        let exportsBefore = module.exports.map(x => {
+            return `export const ${x.ref} = module.exports.${x.ref};`;
+        }).join('\n');
+
+        exportsCode = `${exportsBefore}\n${exportsCode}`;
+
 
         return Templates
             .ESM
