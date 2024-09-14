@@ -7,7 +7,10 @@ export const FileActions = {
         if (/^https?:/.test(path)) {
             return HttpLoader.load(path, opts);
         }
-        return io.File.readAsync(path, opts)
+        return io.File.readAsync(path, {
+            ...(opts??{}),
+            cached: false
+        });
     },
     async readDirectory (path: string, opts) {
 
