@@ -13,6 +13,7 @@ import { res_flattern as res_flatten } from './utils/res';
 import { tree_async } from './utils/tree';
 import { Builder } from './builder/Builder';
 import { color } from './utils/color';
+import { FileActions } from './config/File';
 
 export class Bundler extends class_EventEmitter {
     solution: Solution
@@ -160,7 +161,11 @@ export class Bundler extends class_EventEmitter {
 
         function builderComplete(resources: Resource[]) {
             resources.forEach(res => {
-                io.File.write(res.filename, res.content);
+                let content = res.content;
+                if (typeof content !=='string') {
+                    content = JSON.stringify(content, null, 2);
+                }
+                FileActions.writeFile(res.filename, content, { skipHooks: true})
             });
             return solution
                 .assetsManager
