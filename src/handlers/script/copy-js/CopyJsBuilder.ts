@@ -116,14 +116,19 @@ export class CopyJsBuilder extends BaseScriptBuilder {
         let result = [
             createOutputItem(cloneWithExtension(resource, this.solution.opts.outputExtension))
         ];
-
-        let extra = [{
-            ext: 'ts.map',
-            output: 'js.map',
-        }, {
-            ext: 'd.ts',
-            output: 'd.ts',
-        }];
+        let extra = [];
+        if (resource.filename.endsWith('.ts')) {
+            extra = [
+                {
+                    ext: 'ts.map',
+                    output: 'js.map',
+                },
+                // {
+                //     ext: 'd.ts',
+                //     output: 'd.ts',
+                // }
+            ];
+        }
 
         let readFile = Configuration.Instance.get('readFile');
 
