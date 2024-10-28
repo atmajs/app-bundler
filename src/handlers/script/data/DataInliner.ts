@@ -57,7 +57,6 @@ export class DataInliner extends BaseRewriter {
             console.error(`No require found for ${dep.url} in ${resource.filename}`);
             return;
         }
-        let name = match.groups.name;
         let json = dep.resource.content;
         if (typeof json !== 'string') {
             json = JSON.stringify(json);
