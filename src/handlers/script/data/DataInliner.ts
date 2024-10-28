@@ -20,7 +20,7 @@ export class DataInliner extends BaseRewriter {
                 await this.rewriteImport(resource, res);
                 continue;
             }
-            console.error('CJS not implemented');
+            await this.rewriteRequire(resource, res);
         }
     }
 
@@ -42,6 +42,27 @@ export class DataInliner extends BaseRewriter {
             json = JSON.stringify(json);
         }
         let code = `const ${name} = ${json}`;
+        let content = resource.content.replace(match[0], code);
+        resource.content = content;
+
+        let i = resource.dependencies.indexOf(dep);
+        resource.dependencies.splice(i, 1);
+
+        this.solution.outputResources.remove(dep.resource);
+    }
+    private rewriteRequire (resource: Resource, dep: Resource['dependencies'][0]) {
+        let rgx = new RegExp(`require\\s*\\(\\s*['"]${dep.url}['"]\\s*\\)\\s*;?`);
+        let match = rgx.exec(resource.content);
+        if (match == null) {
+            console.error(`No require found for ${dep.url} in ${resource.filename}`);
+            return;
+        }
+        let name = match.groups.name;
+        let json = dep.resource.content;
+        if (typeof json !== 'string') {
+            json = JSON.stringify(json);
+        }
+        let code = `${json}`;
         let content = resource.content.replace(match[0], code);
         resource.content = content;
 
