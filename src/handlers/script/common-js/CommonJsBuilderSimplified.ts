@@ -69,5 +69,9 @@ function getVarId(resource) {
     return str.replace(/[^\w\d]/g, '_');
 }
 function getModuleVars(resources) {
-    return resources.map(getVarId).sort().map(x => `let ${x} = {};`).join('\n') + '\n';
+    return resources
+        .map(getVarId)
+        .sort()
+        .map(x => `var ${x} = {};`)
+        .join('\n') + '\n';
 }
