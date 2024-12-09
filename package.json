@@ -1,6 +1,6 @@
 {
     "name": "app-bundler",
-    "version": "0.2.14",
+    "version": "0.2.15",
     "description": "",
     "main": "lib/bundler.js",
     "bin": {
@@ -41,7 +41,7 @@
         "atma-utils": "^0.1.13",
         "axios": "^0.21.0",
         "cheerio": "^0.20.0",
-        "includejs": "^0.16.9",
+        "includejs": "^0.17.6",
         "maskjs": "^0.72.37",
         "memd": "^0.3.10",
         "shellbee": "^0.5.22",
