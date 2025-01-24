@@ -1,3 +1,4 @@
+
 var __register, __require, require;
 
 (function(){
@@ -7,8 +8,9 @@ var __register, __require, require;
     var __global = typeof global !== 'undefined' && global ? global : window;
     var __nativeRequire = __global.require || require;
     var __originalRequire = function (path_) {
-        var location = this.location;
-        var path = path_resolveUrl(path_, location);
+        var path = typeof include !== 'undefined' && typeof include.resolvePath === 'function'
+            ? include.resolvePath(path_)
+            : path_resolveUrl(path_, this.location);
 
         if (modules[path]) {
             return modules[path].runOnce();
@@ -59,7 +61,7 @@ var __register, __require, require;
 
     require = __require;
 
-    if (__nativeRequire == null) {
+    if (__global.require != null) {
         __global.require = __require;
     }
 }());
