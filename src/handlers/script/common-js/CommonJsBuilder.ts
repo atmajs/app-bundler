@@ -14,7 +14,7 @@ export class CommonJsBuilder extends BaseScriptBuilder {
         super(solution, handler);
 
 
-        var opts = this.solution.opts.package.commonjs;
+        let opts = this.solution.opts.package.commonjs;
         if (opts && opts.output === 'simplified') {
             this.wrapModule = CommonJsBuilderSimplified.wrapModule;
             this.getRootContent = CommonJsBuilderSimplified.getRootContent;
@@ -34,7 +34,7 @@ export class CommonJsBuilder extends BaseScriptBuilder {
     }
 
     wrapModule(resource: Resource, outputItem, outputItems, setts: IBaseScriptBuilderOpts) {
-        var opts = this.solution.iteration;
+        let opts = this.solution.iteration;
         if (opts.commonjs == null) {
             opts.commonjs = {
                 addHeading: true,
@@ -42,18 +42,19 @@ export class CommonJsBuilder extends BaseScriptBuilder {
             }
         };
 
-        var body = '';
+        let body = '';
 
         if (opts.commonjs.hasHeading === false && opts.commonjs.addHeading === true) {
             opts.commonjs.hasHeading = true;
             body = this.getHeaderContent();
         }
 
-        var { url, content } = resource;
+        let { url, content, aliases } = resource;
 
-        var module = Templates
+        let module = Templates
             .Module
-            .replace('%MODULE_PATH%', () => url)
+            .replace('%MODULE_PATH%', () => `"${url}"`)
+            .replace('%MODULE_ALIASES%', JSON.stringify(aliases ?? []))
             .replace('%MODULE%', () => content)
             .replace('%FOOTER%', () => (setts?.partials?.footer ?? ''));
 
@@ -62,7 +63,7 @@ export class CommonJsBuilder extends BaseScriptBuilder {
     }
 
     getHeaderContent() {
-        var mainUrl = this.solution.outputResources.rootInput.url;
+        let mainUrl = this.solution.outputResources.rootInput.url;
 
         return Templates
             .Header
@@ -88,7 +89,7 @@ export class CommonJsBuilder extends BaseScriptBuilder {
             .join('\n');
 
 
-        var wrapper = new ModuleWrapper(this.solution);
+        let wrapper = new ModuleWrapper(this.solution);
         root.content = wrapper.wrap(body);
     }
 

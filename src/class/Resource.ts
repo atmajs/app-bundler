@@ -136,7 +136,7 @@ export class Resource {
         if (Include.PathResolver.isNpm(includeData.url)) {
             this.aliases.push(includeData.url);
 
-            let byNpmResolver = Npm.resolveAppUrl(includeData.url, parent && parent.location, solution.opts.base);
+            let byNpmResolver = Npm.resolveAppUrl(includeData.url, parent && parent.location, solution.opts);
             if (byNpmResolver != null) {
                 // otherwise "url" could be previously resolved with pathResolver.resolve
                 url = byNpmResolver;
@@ -147,6 +147,16 @@ export class Resource {
                 url = includeData.url;
             }
         }
+        if (includeData.route != null) {
+            let { path, alias } = includeData.route;
+            if (path && Include.PathResolver.isNpm(path) && this.aliases.includes(path) === false) {
+                this.aliases.push(path);
+            }
+            if (alias && Include.PathResolver.isNpm(alias) && this.aliases.includes(alias) === false) {
+                this.aliases.push(alias);
+            }
+        }
+
 
         let mappedUrl = this.solution.mapUrl(url);
         if (mappedUrl != url) {

@@ -12,8 +12,11 @@ export class DataInliner extends BaseRewriter {
     }
 
     async rewriteResource(resource: Resource) {
+        if (resource.dependencies == null) {
+            return;
+        }
         for (let res of resource.dependencies) {
-            if (/(json|yml)$/.test(res.url) === false) {
+            if (/\.(json|yml)$/.test(res.url) === false) {
                 continue;
             }
             if (res.import != null) {
@@ -49,6 +52,7 @@ export class DataInliner extends BaseRewriter {
         resource.dependencies.splice(i, 1);
 
         this.solution.outputResources.remove(dep.resource);
+        this.solution.reporter.info(`Inlining import data from ${dep.url}`);
     }
     private rewriteRequire (resource: Resource, dep: Resource['dependencies'][0]) {
         let rgx = new RegExp(`require\\s*\\(\\s*['"]${dep.url}['"]\\s*\\)\\s*;?`);
@@ -69,5 +73,6 @@ export class DataInliner extends BaseRewriter {
         resource.dependencies.splice(i, 1);
 
         this.solution.outputResources.remove(dep.resource);
+        this.solution.reporter.info(`Inlining require data from ${dep.url}`);
     }
 };

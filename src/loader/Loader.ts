@@ -82,6 +82,13 @@ namespace ResourceLoader {
             loader = __loaders[resource.filename] = new TreeLoader(resource, opts, solution);
             loader.process();
         } else {
+            // Merge aliases to the current cached resource
+            if (resource.aliases.length > 0) {
+                loader.resource.aliases = alot([
+                    ...loader.resource.aliases,
+                    ...resource.aliases
+                ]).distinct().toArray();
+            }
             // Try to find the resource in ancestors
             let res = tryGetCyclicRoot(resource);
             if (res != null) {

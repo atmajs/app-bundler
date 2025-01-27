@@ -37,6 +37,13 @@ export class ResourceInfo {
     resource?: Resource
     import?: ImportNode
 
+    // From IncludeJS parser
+    route?: {
+        path: string
+        params: string
+        alias: string
+    }
+
     static merge(...infos: ResourceInfo[]) {
         const result = new ResourceInfo;
 

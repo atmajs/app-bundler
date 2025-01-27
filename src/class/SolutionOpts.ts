@@ -20,6 +20,7 @@ interface IPackageOptions {
     moduleWrapperCustomPath?: string
     moduleName?: string,
     import?: IImporterOptions
+    platform?: 'node' | 'browser'
     [key: string]: any
 }
 interface IExtensionTypes {

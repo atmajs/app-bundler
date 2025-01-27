@@ -9,7 +9,8 @@
     "scripts": {
         "test": "atma test",
         "watch": "atma run tools/build --watch",
-        "build": "atma run tools/build && atma run tools/build --cli",
+        "build": "atma run tools/build && atma run tools/build --cli && npm run cp",
+        "cp": "copy \"lib\\cli.js\" \"D:\\eth\\0xweb\\node_modules\\app-bundler\\lib\\cli.js\"",
         "server": "atma server",
         "release": "echo \"Run atma pub -m \"message\"\""
     },

@@ -7,32 +7,49 @@ var __register, __require, require;
 
     var __global = typeof global !== 'undefined' && global ? global : window;
     var __nativeRequire = __global.require || require;
-    var __originalRequire = function (path_) {
-        var path = typeof include !== 'undefined' && typeof include.resolvePath === 'function'
-            ? include.resolvePath(path_)
-            : path_resolveUrl(path_, this.location);
-
-        if (modules[path]) {
-            return modules[path].runOnce();
+    var __bundlerRequire = function (path_) {
+        var arr = [
+            path_resolveUrl(path_, this.location)
+        ];
+        if (typeof include !== 'undefined' && typeof include.resolvePath === 'function') {
+            arr.push(include.resolvePath(path_));
         }
-        var pathWithoutExt = path.replace(/\\.\\w+$/, '').toLowerCase();
+        if (/^[@\\w]/.test(path_)) {
+            arr.push(path_);
+        }
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] in modules) {
+                return modules[arr[i]].runOnce();
+            }
+        }
+
         for (var key in modules) {
             var $pathWithoutExt = key.replace(/\\.\\w+$/, '').toLowerCase();
-            if ($pathWithoutExt === pathWithoutExt) {
-                let module = modules[path] = modules[key];
-                return module.runOnce();
+            for (var i = 0; i < arr.length; i++) {
+                var path = arr[i];
+                var pathWithoutExt = path.replace(/\\.\\w+$/, '').toLowerCase();
+                if ($pathWithoutExt === pathWithoutExt) {
+                    let module = modules[path] = modules[key];
+                    return module.runOnce();
+                }
             }
         }
 
         return __nativeRequire(path_);
     };
 
-    __register = function (path, factory) {
+    __register = function (path, aliases, factory) {
         var filename = path_resolveUrl(path);
-        modules[filename] = new Module(filename, factory);
+        var module = new Module(filename, factory);
+        modules[filename] = module;
+        if (aliases) {
+            aliases.forEach(alias => {
+                modules[alias] = module;
+            })
+        }
     };
 
-    __require =__originalRequire.bind({ location: path_getDir(path_resolveUrl('%ROOT_DIR%')) });
+    __require =__bundlerRequire.bind({ location: path_getDir(path_resolveUrl('%ROOT_DIR%')) });
 
     var modules = {};
     var Module = function(filename, factory){
@@ -45,7 +62,7 @@ var __register, __require, require;
         if (this.exports != null) {
             return this.exports;
         }
-        var require = __originalRequire.bind({
+        var require = __bundlerRequire.bind({
             location: this.dirname
         });
         this.exports = {};

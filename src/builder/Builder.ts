@@ -23,8 +23,8 @@ export const Builder = {
                     .then(() => solution.outputResources.getAll());
             });
 
-        function rewriteDependenciesInternal(resources: Resource[]) {
-            let promises = resources.map(resource => {
+        async function rewriteDependenciesInternal(resources: Resource[]) {
+            await alot(resources).forEachAsync(async (resource, i) => {
                 let ext = path_getExtension(resource.url);
                 let handler = solution.handlers.find(x =>
                     x.rewriter.accepts(ext)
@@ -37,9 +37,9 @@ export const Builder = {
                 if (handler == null) {
                     throw Error('Rewriter not found for the resource: ' + resource.url);
                 }
-                return handler.rewriter.rewriteResource(resource);
-            });
-            return async_whenAll(promises);
+                await handler.rewriter.rewriteResource(resource);
+
+            }).toArrayAsync({ threads: 1 });
         }
 
         function rewriteRoot() {
