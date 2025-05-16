@@ -244,13 +244,14 @@ namespace ResourceLoader {
             resources.forEach((res, i) => {
                 let dep = deps[i];
                 if (res.isMapped) {
-                    let str = this.resource.content.replace(dep.url, res.url);
-                    if (str === this.resource.content) {
-                        throw new Error(`Mapped url was not replaced: ${dep.url}`);
-                    }
+                    // do not replace in source
+                    // let str = this.resource.content.replace(dep.url, res.url);
+                    // if (str === this.resource.content) {
+                    //     throw new Error(`Mapped url was not replaced: ${dep.url}`);
+                    // }
 
-                    this.resource.content = str;
-                    dep.url = res.url;
+                    // this.resource.content = str;
+                    // dep.url = res.url;
                 }
             });
 

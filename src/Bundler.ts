@@ -165,7 +165,7 @@ export class Bundler extends class_EventEmitter {
                 if (typeof content !=='string') {
                     content = JSON.stringify(content, null, 2);
                 }
-                FileActions.writeFile(res.filename, content, { skipHooks: true})
+                FileActions.writeFile(res.filename, content, { skipHooks: false })
             });
             return solution
                 .assetsManager
