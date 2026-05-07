@@ -7,11 +7,18 @@ export namespace Npm {
     export function resolveAppUrl (path: string, currentLocation: string, opts: SolutionOpts) {
         let base = opts.base;
         let name = /^(@?[^\\\/]+)/.exec(path)[0];
+        let subname = /^([^\\\/]+)\/([^\\\/]+)/.exec(path)?.[2];
         let resource = path.substring(name.length + 1);
         while (path != null) {
             let dirname = path_combine(currentLocation, 'node_modules', name, '/');
             let pkg = path_combine(dirname, 'package.json');
-
+             if (subname) {
+                // Resolve also "@foo/bar/qux" as "node_modules/@foo/bar/qux.js"
+                let pkg2 = path_combine(dirname, subname, 'package.json');
+                if (io.File.exists(pkg2)) {
+                    pkg = pkg2;
+                }
+            }
             if (io.File.exists(pkg) === false) {
                 let next = currentLocation.replace(/[^\/]+\/?$/, '');
                 if (next === currentLocation) {
