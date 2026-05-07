@@ -37,10 +37,10 @@ UTest({
                 })
                 .done(resources => {
                     eq_(resources.length, 1);
-                    var main = resources[0];
+                    let main = resources[0];
 
                     eq_(main.url, '/build/release/main.js');
-                    var module = {} as any;
+                    let module = {} as any;
                     eval(main.content);
                     deepEq_(module.exports.letters, ['a', 'b']);
                 });
@@ -52,7 +52,7 @@ UTest({
                 'main.js': `
                     module.exports = require('baz');
                 `,
-                'node_modules/baz/package.json':  {
+                'node_modules/baz/package.json': {
                     "main": "lib/some.js"
                 },
                 'node_modules/baz/lib/some.js': `
@@ -60,27 +60,26 @@ UTest({
                 `,
             });
         },
-        'should load file with nodejs path resolution'() {
-            return Bundler
-                .build('main.js', {
-                    package: {
-                        module: 'commonjs',
-                        commonjs: {
-                            output: 'simplified'
-                        }
-                    },
-                    silent: true
-                })
-                .done(resources => {
-                    eq_(resources.length, 1);
-                    var main = resources[0];
+        async 'should load file with nodejs path resolution'() {
 
-                    eq_(main.url, '/build/release/main.js');
+            const resources = await Bundler.build('main.js', {
+                package: {
+                    module: 'commonjs',
+                    commonjs: {
+                        output: 'simplified'
+                    }
+                },
+                silent: true
+            });
 
-                    var module = {} as any;
-                    eval(main.content);
-                    deepEq_(module.exports, 'a foo some');
-                });
+            eq_(resources.length, 1);
+            let main = resources[0];
+
+            eq_(main.url, '/build/release/main.js');
+
+            let module = {} as any;
+            eval(main.content);
+            deepEq_(module.exports, 'a foo some');
         }
     },
 });

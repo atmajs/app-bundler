@@ -6,7 +6,7 @@ var __register, __require, require;
     // import ./path.js
 
     var __global = typeof global !== 'undefined' && global ? global : window;
-    var __nativeRequire = __global.require || require;
+    var __nativeRequire = __global.require || require || (typeof module !== 'undefined' ? module.require : null);
     var __bundlerRequire = function (path_) {
         var arr = [
             path_resolveUrl(path_, this.location)

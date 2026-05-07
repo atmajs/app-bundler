@@ -68,8 +68,8 @@ export namespace Runner {
 
     function processSingle(config: IBundle, bundleFn: IBundlerFunction) {
         validate(config);
-        let path = config.file,
-            opts = config;
+        let path = config.file;
+        let opts = config;
 
         //** Caution: rewrite passing options to middleware not via globals */
         (global as any).config = (config as any).settings;

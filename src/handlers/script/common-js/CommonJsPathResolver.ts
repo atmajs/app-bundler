@@ -21,6 +21,7 @@ export class CommonJsPathResolver extends BasePathResolver {
 
     resolve (includeData, parentResource) {
         let filename = Npm.resolveAppUrl(includeData.url, parentResource.directory, this.solution.opts);
+        console.log(`Resolved`, filename);
         if (filename) {
             let url = this.solution.opts.toAppUrl(filename);
             this.solution.opts.mappings[includeData.url] = url;

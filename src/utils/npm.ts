@@ -10,7 +10,9 @@ export namespace Npm {
         let resource = path.substring(name.length + 1);
         while (path != null) {
             let dirname = path_combine(currentLocation, 'node_modules', name, '/');
-            if (Directory.exists(dirname) === false) {
+            let pkg = path_combine(dirname, 'package.json');
+
+            if (io.File.exists(pkg) === false) {
                 let next = currentLocation.replace(/[^\/]+\/?$/, '');
                 if (next === currentLocation) {
                     return null;
@@ -25,11 +27,8 @@ export namespace Npm {
                 resource = resource.substring(subPackage.length + 1);
             }
 
-            let pkg = path_combine(dirname, 'package.json');
             let json = io.File.read<TPackageJson> (pkg);
             let filename = resolveAppUrlFromPackageJson(dirname, json, resource, opts);
-
-
             if (base) {
                 if (base.endsWith('/') === false) {
                     // Base path must be a folder
